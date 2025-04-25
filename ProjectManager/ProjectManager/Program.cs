@@ -1,3 +1,5 @@
+using ProjectManager.Models.Services;
+
 namespace ProjectManager
 {
     public class Program
@@ -10,6 +12,7 @@ namespace ProjectManager
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+            MongoManipulator.Initialize(builder.Configuration);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
