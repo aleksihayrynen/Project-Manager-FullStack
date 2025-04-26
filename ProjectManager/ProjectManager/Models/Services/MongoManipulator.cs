@@ -33,8 +33,7 @@ namespace ProjectManager.Models.Services
             settings = new MongoClientSettings() { Server = address };
             client = new MongoClient(settings);
             database = client.GetDatabase(DATABASE_NAME);
-            Console.WriteLine($"MongoDB Address: {DATABASE_ADDRESS}");
-            Console.WriteLine($"MongoDB Database: {DATABASE_NAME}");
+
         }
         private static IMongoDatabase GetDB()
         {
@@ -45,7 +44,7 @@ namespace ProjectManager.Models.Services
         }
 
 
-        public static async Task SaveAsync<T>(T entity) where T : DB_SaveableObject
+        public static async Task Save<T>(T entity) where T : DB_SaveableObject
         {
             string collectionName = typeof(T).Name;
             var collection = GetDB().GetCollection<T>(collectionName);
