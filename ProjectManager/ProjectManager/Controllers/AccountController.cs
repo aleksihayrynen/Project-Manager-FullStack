@@ -58,12 +58,17 @@ namespace ProjectManager.Controllers
                         Console.WriteLine("Login succes");
                         return RedirectToAction("Index", "Home");
                     }
-                    Console.WriteLine("Password incorrect");
                     ModelState.AddModelError("password", "Username or password incorrect");
                     return View(model);
                 }
             }
             return View(model);
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Register()
