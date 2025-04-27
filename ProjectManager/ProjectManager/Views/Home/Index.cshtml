@@ -2,7 +2,52 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- First Section: Split with image and text -->
+<section class="intro-section">
+    <div class="text-side">
+        <h1>OpenSource: Project Manager</h1>
+        <p>Start your journey with us today. Sign up or log in to unlock amazing benefits.</p>
+        <div class="buttons">
+            <form asp-action="Register" asp-controller="Account" method="get">
+                <button class="btn btn-signup" type="submit">Sign Up</button>
+            </form>
+            <form asp-action="Login" asp-controller="Account" method="get">
+                <button class="btn btn-login" type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+    <div class="image-side">
+        <div class="image-cut">
+            <img src="/Media/Background.png" alt="Welcome Image">
+        </div>
+    </div>
+</section>
+
+<!-- Second Section: Three Columns -->
+<section class="features-section">
+    <div class="feature_container">
+        <div class="feature">
+            <img src="/Media/Review.svg" alt="Benefit">
+            <h3>Review</h3>
+            <p>Stay ahead by reviewing your progress easily. With our detailed insights, you can understand your journey better and make smarter decisions for future success.</p>
+        </div>
+        <div class="feature">
+            <img src="/Media/Alert.svg" alt="What It Can Do">
+            <h3>Track</h3>
+            <p>Never miss a beat with real-time tracking. Monitor your tasks, goals, and activities effortlessly and stay organized without the stress of manual updates.</p>
+        </div>
+        <div class="feature">
+            <img src="~/Media/Plan.svg" alt="Positives">
+            <h3>Schedule</h3>
+            <p>Plan smarter, not harder. Create flexible schedules that adapt to your needs and keep you one step ahead — whether it's for work, school, or personal growth.</p>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts {
+    <script>
+
+    </script>
+
+}

@@ -15,7 +15,9 @@
 
 *{
     margin:0;
-    padding:0
+    padding:0;
+    box-sizing:border-box;
+    
 }
 
 
@@ -27,11 +29,7 @@ html {
 }
 
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
-    }
-}
+
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
@@ -53,6 +51,7 @@ body {
 header{
     position:sticky;
     top:0;
+    z-index: 1;
 }
 
 
@@ -109,7 +108,7 @@ header{
 }
 
 
-.side_nav .submenu.show{
+.side_nav{
     display: block;
 }
 
@@ -119,36 +118,19 @@ header{
     
 }
 
-@media only screen and (max-width: 800px) {
-    .side_nav.close {
-        width: 0px;
-        overflow: hidden;
+    .side_nav.close span {
+        opacity:0;
     }
-
-    .container {
-        min-height: calc(100vh - var(--navbar-height) + 15px); /*  +15px is for the bottom margin in nav*/
-    }
-}
-
-.side_nav.close span {
-    opacity: 0;
-}
 
 .container {
     min-height: calc(100vh - var(--navbar-height) + 15px); /*  +15px is for the bottom margin in nav*/
-    padding-left: var(--bs-gutter-x, .75rem);
+    padding-left:80px;
 }
 
-
-
-header {
-
-}
 
 nav {
     height:var(--navbar-height);
     background-color: var(--colourpalette-nav_bg);
-    margin-bottom: 15px;
     position:sticky;
     
 }
@@ -162,10 +144,10 @@ nav {
 }
 
 .menu_icon {
-    width: 20px;
-    height:20px;
+    width: 30px;
+    height:30px;
     margin-right: 30px;
-    margin-left:10px;
+    margin-left:5px;
 }
 
 .logo_icon {
@@ -176,12 +158,8 @@ nav {
 .account_buttons {
     margin-left: auto;
     margin-right: 30px;
+    display:flex;
 }
-
-
-
-
-
 
 /* https://copy-paste-css.com/ */
 .custom_button {
@@ -210,6 +188,7 @@ nav {
 .custom_button:hover {
     color: var(--colourpalette-white);
     background-color: var(--colourpalette-pink);
+    border:none;
 }
 
 footer {
@@ -261,3 +240,168 @@ footer {
     height: 100%;
     object-fit: cover;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* First Section: Split screen */
+.intro-section {
+    display: flex;
+    height: 70vh;
+    background-color: var(--darker_bg);
+    background-image: url(/Media/Background_fruit.png);
+    background-repeat: repeat;
+    background-blend-mode:color;
+}
+
+.text-side, .image-side {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.text-side {
+    flex-direction: column;
+    text-align: left;
+}
+
+.text-side h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.text-side p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: var(--colourpalette-white);
+}
+
+.text-side .buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    background-color: var(--darker_bg);
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #555;
+}
+
+.btn-signup {
+    background-color: #28a745;
+}
+
+.btn-signup:hover {
+    background-color: #218838;
+}
+
+.btn-login {
+    background-color: #007bff;
+}
+
+.btn-login:hover {
+    background-color: #0056b3;
+}
+
+/* Image side with a cut effect */
+.image-side {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-cut {
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 10% 100%);
+    /* This cuts the bottom-left corner at an angle */
+}
+
+.image-cut img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Second Section: Features */
+.features-section {
+    padding: 60px 20px;
+    background-color: var(--darker_bg);
+    margin-bottom:5vh;
+}
+
+.features-section .feature_container {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+    .features-section .feature {
+        min-width: 270px;
+        max-width: 300px;
+        flex: 1;
+    }
+
+.features-section .feature img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.features-section .feature h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.features-section .feature p {
+    font-size: 1rem;
+    color: var(--colourpalette-white);
+}
+
+@media screen and (max-width: 800px) {
+    .side_nav.close {
+        width: 0px;
+        overflow: hidden;
+    }
+
+    .container {
+        min-height: calc(100vh - var(--navbar-height) + 15px); /*  +15px is for the bottom margin in nav*/
+        padding-left: var(--bs-gutter-x, .75rem);
+    }
+
+    html {
+        font-size: 16px;
+    }
+
+    .image-side {
+        display: none;
+    }
+
+    .features-section .feature_container {
+        justify-content:flex-start;
+    }
+}
+

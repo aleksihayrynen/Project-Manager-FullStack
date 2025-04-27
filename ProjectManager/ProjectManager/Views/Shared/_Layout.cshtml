@@ -24,7 +24,7 @@
             </div>
         </nav>
     </header>
-        <aside class="side_nav">
+        <aside class="side_nav close">
             <ul>
                 <li class="active">
                     <a>
@@ -80,15 +80,10 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script>
-        @await RenderSectionAsync("Scripts", required: false)
 
-        const sidebar = document.querySelector(".side_nav");
-        function toggleMenu() {
-            sidebar.classList.toggle("close");
-        }
 
-    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
     
 </body>
 </html>
