@@ -17,7 +17,8 @@ function adjustSidebarHeight() {
 
     if (footerRect.top < windowHeight - 50) {
         // Footer is visible
-        sideNav.style.height = "82vh";
+
+        sideNav.style.height = "calc(100vh - 170px)";
     } else {
         // Footer not visible 
         sideNav.style.height = "100vh";

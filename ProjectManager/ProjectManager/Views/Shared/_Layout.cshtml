@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using ExpenseTracker.Models.Utils;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,22 +14,35 @@
     <header>
         <nav class="navbar">
             <div class="navbar_container">
-                @if (User.Identity.IsAuthenticated)
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     <img class="menu_icon" onclick="toggleMenu()" src="/Media/menu_icon.svg" alt="Menu icon">
                 }
                 <a asp-area="" asp-controller="Home" asp-action="Index">
                     <img class="logo_icon" src="/Media/flover.png" alt="Logo">
                 </a>
-                <div class="account_buttons">
-                    <form asp-action="Login" asp-controller="Account" method="get">
-                        <button type="submit" class="custom_button">Login</button>
-                    </form>
-                </div>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="account_buttons">
+                        <h5 class="mb-0"> @UtilityFunctions.CapitalizeFirstLetter(User.Identity.Name)</h5>
+                        <div class="profilepicture_container">
+                            <img class="profile_picture" src="/Media/flover.png" />
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="account_buttons">
+                        <form asp-action="Login" asp-controller="Account" method="get">
+                            <button type="submit" class="custom_button">Login</button>
+                        </form>
+                    </div>
+                }
+
             </div>
         </nav>
     </header>
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
         <aside class="side_nav close">
             <ul>
