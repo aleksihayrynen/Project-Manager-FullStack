@@ -13,6 +13,10 @@ namespace ProjectManager.Models
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool OpenCreate { get; set; } = false;
+        public bool OpenInvite { get; set; } = false;
+        public bool UseReview { get; set; } = false;
         public List<ProjectMembers> Members { get; set; } = new List<ProjectMembers>();
 
     }

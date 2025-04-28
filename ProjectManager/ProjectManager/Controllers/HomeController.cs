@@ -15,7 +15,8 @@ namespace ProjectManager.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(ViewData["Title"] = "No");
+
         }
 
 

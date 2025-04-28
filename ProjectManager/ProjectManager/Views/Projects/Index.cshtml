@@ -1,0 +1,76 @@
+﻿
+<div class="button_parent" style="position:relative;">
+    <div class="AddItem_div">
+        <button type="button" class="btn btn-success" id="showModalButton">
+            Add Item
+        </button>
+    </div>
+</div>
+
+<div id="modalContainer"></div>
+
+
+@section Scripts {
+
+    <script>
+            $(document).ready(function () {
+            $(document).on('click', '.toggle-btn', function () {
+                var value = $(this).data('value');
+                var target = $(this).data('target');
+                console.log(this.data);
+                console.log("value: " + value);
+                console.log("target: " + target);
+
+                // Set the hidden input value
+                $('#' + target).val(value);
+
+                // Remove active class from both buttons in the same group
+                $(this).siblings('.toggle-btn').removeClass('active');
+                // Add active class to clicked button
+                $(this).addClass('active');
+            });
+        });
+
+        $(document).ready(function () {
+            function loadModal() {
+                $.get('@Url.Action("AddItemPartial", "Projects")', function (response) {
+                    $('#modalContainer').html(response);
+                    $('#addItemModal').modal('show');
+                });
+            }
+
+            // Load modal on button click
+            $('#showModalButton').click(loadModal);
+
+
+            // Delegate the form submission to dynamically loaded content
+            $('#modalContainer').on('submit', '#addProjectform', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                console.log(form);
+
+                // $.ajax({
+                //     url: '@Url.Action("AddItem", "Projects")',
+                //     type: 'POST',
+                //     data: form.serialize(),
+                //     success: function (response) {
+                //     if (response.success) {
+                //         $('#addItemModal').modal('hide');
+                //         location.reload();
+                //     } else {
+                //         // Clean up old modal + backdrop
+                //         $('.modal-backdrop').remove();
+                //         $('#addItemModal').modal('hide');
+                //         $('#addItemModal').remove();
+
+                //         // Inject updated modal with errors
+                //         $('#modalContainer').html(response);
+                //         $('#addItemModal').modal('show');
+                //     }
+                // }
+                // });
+            });
+        });
+    </script>
+
+}

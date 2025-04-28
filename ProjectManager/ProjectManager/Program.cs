@@ -3,6 +3,7 @@ using ProjectManager.Models.Services;
 using ProjectManager.Encryption;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+
 namespace ProjectManager
 {
     public class Program
@@ -13,6 +14,9 @@ namespace ProjectManager
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<GetProjectsService>();
+
+            //builder.Services.AddServerSideBlazor();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
@@ -45,6 +49,7 @@ namespace ProjectManager
 
             app.UseAuthorization();
             app.UseAuthentication();
+            //app.MapBlazorHub();
 
 
             app.MapControllerRoute(

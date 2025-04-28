@@ -13,6 +13,7 @@ namespace ProjectManager.Controllers
 {
     public class AccountController : Controller
     {
+
         public IActionResult Index()
         {
             return RedirectToAction("Login");
@@ -20,6 +21,7 @@ namespace ProjectManager.Controllers
 
         public IActionResult Login()
         {
+            ViewData["Title"] = "Login";
             return View();
         }
 
@@ -73,6 +75,7 @@ namespace ProjectManager.Controllers
 
         public IActionResult Register()
         {
+            ViewData["Title"] = "Register";
             return View();
         }
 
