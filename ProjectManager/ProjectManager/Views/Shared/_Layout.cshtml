@@ -12,7 +12,10 @@
     <header>
         <nav class="navbar">
             <div class="navbar_container">
-                <img class="menu_icon" onclick="toggleMenu()" src="/Media/menu_icon.svg" alt="Menu icon">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <img class="menu_icon" onclick="toggleMenu()" src="/Media/menu_icon.svg" alt="Menu icon">
+                }
                 <a asp-area="" asp-controller="Home" asp-action="Index">
                     <img class="logo_icon" src="/Media/flover.png" alt="Logo">
                 </a>
@@ -24,6 +27,8 @@
             </div>
         </nav>
     </header>
+    @if (User.Identity.IsAuthenticated)
+    {
         <aside class="side_nav close">
             <ul>
                 <li class="active">
@@ -43,23 +48,26 @@
                         <img src="/Media/chart_icon.svg" />
                         <span>Analytics</span>
                     </a>
-                    
+
                 </li>
                 <li>
                     <a>
                         <img src="/Media/rocket_icon.svg" />
                         <span>Projects</span>
-                    </a>   
+                    </a>
                 </li>
             </ul>
         </aside>
+    }
+
+
         <div class="container">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
 
-    <footer class="border-top footer text-muted">
+    <footer>
         <div class="footer_container">
             <div class="footer_1">
                 <p>Github:</p>
