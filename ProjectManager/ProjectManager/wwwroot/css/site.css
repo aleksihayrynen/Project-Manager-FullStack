@@ -363,7 +363,8 @@ footer {
     object-fit: cover;
 }
 
-/* Second Section: Features */
+
+
 .features-section {
     padding: 60px 20px;
     background-color: var(--darker_bg);
@@ -412,7 +413,7 @@ footer {
     display: flex;
     width: 80%;
     max-width: 1200px;
-    background-color: #1e1e1e;
+    background-color: var(--colourpalette-nav_bg);
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
@@ -478,11 +479,7 @@ footer {
 
 
 
-/* Optional: Adding custom styles */
-.toggle-btn.active {
-    background-color: #007bff;
-    color: white;
-}
+
 
 .toggle-btn {
     cursor: pointer;
@@ -491,13 +488,31 @@ footer {
 
 .toggle-btn:hover {
     background-color: #0056b3;
-    color: white;
+    border-color: #0056b3;
 }
 
-.toggle-btn.active {
-background-color: #28a745;
-color: white;
+    .toggle-btn.active {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+
+.modal-content {
+    background-color: var(--colourpalette-nav_bg);
+    border-radius: 5%;
+    border: 1px solid #444;
+    color: #fff;
 }
+
+.modal-content .form-group, .modal-content button {
+    margin-bottom: 15px;
+}
+
+
+
+
+
 
 
 
