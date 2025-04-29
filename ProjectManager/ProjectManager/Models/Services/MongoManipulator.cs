@@ -60,12 +60,17 @@ namespace ProjectManager.Models.Services
             }
         }
 
-        public static async Task<T> GetObjectById<T>(T entity) where T : DB_SaveableObject
+        public static async Task<T> GetObjectById<T>(ObjectId id) where T : DB_SaveableObject
         {
             string collectionName = typeof(T).Name;
             var collection = GetDB().GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq(e => e._id, entity._id);
+            var filter = Builders<T>.Filter.Eq(e => e._id, id);
             return await collection.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public static async Task<T> GetObjectById<T>(T entity) where T : DB_SaveableObject
+        {
+            return await GetObjectById<T>(entity._id);
         }
 
         public static async Task<T> GetObjectByField<T>(string fieldName, string value) where T : DB_SaveableObject

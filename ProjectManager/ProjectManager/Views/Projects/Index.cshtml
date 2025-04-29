@@ -1,4 +1,5 @@
-﻿
+﻿@model List<Project>
+
 <div class="button_parent" style="position:relative;">
     <div class="AddItem_div">
         <button type="button" class="btn btn-success" id="showModalButton">
@@ -10,6 +11,26 @@
 <div id="modalContainer"></div>
 
 
+@foreach (var project in Model)
+{
+    <div class="project_div">
+        <a class="project_link" href="@Url.Action("Details", "Projects", new { id = project._id, project_title = project.Title })">
+            <h1>@project.Title</h1>
+            <p>Created: @project.CreatedAt</p>
+            <p>Open Invite: @project.OpenInvite</p>
+            <p>Open Create: @project.OpenCreate</p>
+
+            <h4>Members:</h4>
+            @foreach (var member in project.Members)
+            {
+                <p>UserId: @member.Username</p>
+                <p>Role: @member.Role</p>
+            }
+        </a>
+        
+    </div>
+}
+
 @section Scripts {
 
     <script>
@@ -18,8 +39,6 @@
                 var value = $(this).data('value');
                 var target = $(this).data('target');
                 console.log(this.data);
-                console.log("value: " + value);
-                console.log("target: " + target);
 
                 // Set the hidden input value
                 $('#' + target).val(value);
@@ -33,9 +52,9 @@
 
         $(document).ready(function () {
             function loadModal() {
-                $.get('@Url.Action("AddItemPartial", "Projects")', function (response) {
+                $.get('@Url.Action("addProjectModal", "Projects")', function (response) {
                     $('#modalContainer').html(response);
-                    $('#addItemModal').modal('show');
+                    $('#addProjectModal').modal('show');
                 });
             }
 
@@ -49,26 +68,26 @@
                 var form = $(this);
                 console.log(form);
 
-                // $.ajax({
-                //     url: '@Url.Action("AddItem", "Projects")',
-                //     type: 'POST',
-                //     data: form.serialize(),
-                //     success: function (response) {
-                //     if (response.success) {
-                //         $('#addItemModal').modal('hide');
-                //         location.reload();
-                //     } else {
-                //         // Clean up old modal + backdrop
-                //         $('.modal-backdrop').remove();
-                //         $('#addItemModal').modal('hide');
-                //         $('#addItemModal').remove();
+                $.ajax({
+                    url: '@Url.Action("AddProject", "Projects")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                    if (response.success) {
+                        $('#addProjectModal').modal('hide');
+                        location.reload();
+                    } else {
+                        // Clean up old modal + backdrop
+                        $('.modal-backdrop').remove();
+                        $('#addProjectModal').modal('hide');
+                        $('#addProjectModal').remove();
 
-                //         // Inject updated modal with errors
-                //         $('#modalContainer').html(response);
-                //         $('#addItemModal').modal('show');
-                //     }
-                // }
-                // });
+                        // Inject updated modal with errors
+                        $('#modalContainer').html(response);
+                        $('#addProjectModal').modal('show');
+                    }
+                }
+                });
             });
         });
     </script>

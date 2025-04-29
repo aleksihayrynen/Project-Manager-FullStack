@@ -1,0 +1,76 @@
+﻿@model Project
+
+<div class="button_parent" style="position:relative;">
+    <div class="AddItem_div">
+        <button type="button" class="btn btn-success" id="showModalButton">
+            Add Item
+        </button>
+    </div>
+</div>
+
+<div id="modalContainer"></div>
+
+<h1>plsss</h1>
+<h1>@Model.Title</h1>
+<p>Created: @Model.CreatedAt</p>
+<p>Open Invite: @Model.OpenInvite</p>
+<p>Open Create: @Model.OpenCreate</p>
+
+
+<h3>Members</h3>
+@foreach (var member in Model.Members)
+{
+    <p>@member.UserId</p>
+    <p>@member.Role</p>
+}
+
+
+
+@section Scripts {
+
+    <script>
+
+
+        $(document).ready(function () {
+            function loadModal() {
+                $.get('@Url.Action("addTaskModal", "Projects")', function (response) {
+                    $('#modalContainer').html(response);
+                    $('#addTaskModal').modal('show');
+                });
+            }
+
+            // Load modal on button click
+            $('#showModalButton').click(loadModal);
+
+
+            // Delegate the form submission to dynamically loaded content
+            $('#modalContainer').on('submit', '#addTaskform', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                console.log(form);
+
+                $.ajax({
+                    url: '@Url.Action("AddTask", "Projects", new { project_id = @Model._id })',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                    if (response.success) {
+                        $('#addTaskModal').modal('hide');
+                        location.reload();
+                    } else {
+                        // Clean up old modal + backdrop
+                        $('.modal-backdrop').remove();
+                        $('#addTaskModal').modal('hide');
+                        $('#addTaskModal').remove();
+
+                        // Inject updated modal with errors
+                        $('#modalContainer').html(response);
+                        $('#addTaskModal').modal('show');
+                    }
+                }
+                });
+            });
+        });
+    </script>
+
+}
