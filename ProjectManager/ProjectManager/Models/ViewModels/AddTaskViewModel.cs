@@ -11,7 +11,7 @@ namespace ProjectManager.Models.ViewModels
         [MinLength(2)]
         [MaxLength(40)]
         [DisplayName("Task name")]
-        public string TaskName { get; set; } = "Why so many 0's";
+        public string TaskName { get; set; }
 
         [DisplayName("Description")]
         [MaxLength(200)]
@@ -19,7 +19,7 @@ namespace ProjectManager.Models.ViewModels
 
         [Required]
         [DisplayName("Assigned To")]
-        public ObjectId AssignedTo { get; set; }
+        public string AssignedTo { get; set; }
 
         [Required]
         public DateTime DueDate { get; set; }

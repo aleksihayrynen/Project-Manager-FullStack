@@ -21,7 +21,7 @@ namespace ProjectManager.Controllers
         
             public IActionResult addTaskModal()
         {
-            var userId = new ObjectId(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             return PartialView("_addTaskModal",
                 new AddTaskViewModel
                 {
@@ -53,8 +53,6 @@ namespace ProjectManager.Controllers
                 try
                 {
                     var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    var username = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
-
                     if (string.IsNullOrEmpty(userId))
                         throw new Exception("User not authenticated.");
 
@@ -63,7 +61,7 @@ namespace ProjectManager.Controllers
                         ProjectId = project_id,
                         Title = model.TaskName,
                         Description = model.Description,
-                        AssignedTo = model.AssignedTo,
+                        AssignedTo = new ObjectId(model.AssignedTo),
                         CreatedBy = new ObjectId(userId),
                         Completed = false,
                         DueDate = model.DueDate,
@@ -86,6 +84,7 @@ namespace ProjectManager.Controllers
             {
                 if (string.IsNullOrEmpty(model.ProjectName))
                     ModelState.AddModelError(nameof(model.ProjectName), "Title cannot be empty");
+                    
 
                 return PartialView("addProjectModal", model);
             }
@@ -130,6 +129,7 @@ namespace ProjectManager.Controllers
 
         public async  Task<IActionResult> Index()
         {
+            
             ViewData["Title"] = "Projects";
             try
             {
