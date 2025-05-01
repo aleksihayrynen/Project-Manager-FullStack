@@ -15,8 +15,9 @@ namespace ProjectManager
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<GetProjectsService>();
+            builder.Services.AddScoped<GetTaskService>();
 
-            //builder.Services.AddServerSideBlazor();
+            builder.Services.AddServerSideBlazor();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
@@ -49,7 +50,7 @@ namespace ProjectManager
 
             app.UseAuthorization();
             app.UseAuthentication();
-            //app.MapBlazorHub();
+            app.MapBlazorHub();
 
 
             app.MapControllerRoute(

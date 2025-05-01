@@ -18,8 +18,7 @@ namespace ProjectManager.Controllers
             _getProjectsService = getProjectsService;
         }
 
-        
-            public IActionResult addTaskModal()
+        public IActionResult addTaskModal()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             return PartialView("_addTaskModal",
@@ -36,7 +35,14 @@ namespace ProjectManager.Controllers
             return PartialView("_addProjectModal", new AddProjectViewModel { });
         }
 
-        
+        [HttpGet]
+        public IActionResult InviteModal(string projectId)
+        {
+            var model = new InviteViewModel { ProjectId = projectId };
+            return PartialView("_inviteModal", model);
+        }
+
+
         public async Task<IActionResult> AddTask(AddTaskViewModel model, ObjectId project_id)
         {
 
@@ -46,7 +52,7 @@ namespace ProjectManager.Controllers
                 if (string.IsNullOrEmpty(model.TaskName))
                     ModelState.AddModelError(nameof(model.TaskName), "Title cannot be empty");
 
-                return PartialView("addTaskModal", model);
+                return PartialView("_addTaskModal", model);
             }
             else
             {
@@ -86,7 +92,7 @@ namespace ProjectManager.Controllers
                     ModelState.AddModelError(nameof(model.ProjectName), "Title cannot be empty");
                     
 
-                return PartialView("addProjectModal", model);
+                return PartialView("_addProjectModal", model);
             }
             else
             {

@@ -9,5 +9,7 @@ namespace ProjectManager.Models
         [BsonRepresentation(BsonType.ObjectId)] 
         public ObjectId _id { get; set; }
 
+        //public ObjectId _oid { get { new ObjectId _id; } }
+
         }
 }

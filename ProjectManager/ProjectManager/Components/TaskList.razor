@@ -1,0 +1,52 @@
+﻿@using ProjectManager.Models.Services
+@using ProjectManager.Models
+@inject GetTaskService GetTaskService
+@using MongoDB.Bson;
+
+<h3>TaskList</h3>
+<table>
+    <thead>
+        <tr>
+            <th>
+                Task title
+            </th>
+            <th>
+                Task state
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (taskitems != null)
+        {
+            @foreach (var item in taskitems)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.State</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td>No data</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<TaskItem>? taskitems;
+
+    [Parameter]
+    public string ProjectId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(ProjectId) && ObjectId.TryParse(ProjectId, out var parsedId))
+        {
+            taskitems = await GetTaskService.GetTasksByProjectId(parsedId);
+        }
+    }
+}
+

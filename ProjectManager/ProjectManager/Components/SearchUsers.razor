@@ -1,0 +1,129 @@
+﻿@inject GetProjectsService _getProjectsService
+@using ProjectManager.Models.ViewModels
+@using ProjectManager.Models.Services
+@using ProjectManager.Models
+@using MongoDB.Bson
+
+<div class="invite-modal">
+    <input type="text"
+    class="form-control"
+    placeholder="Search by name or email..."
+    @bind="searchText"
+    @bind:event="oninput" />
+
+    @if (searchResults.Any())
+    {
+        <ul class="list-group">
+            @foreach (var user in searchResults)
+            {
+                <li class="list-group-item" @onclick="() => AddUser(user)">
+                    @user.Username (@user.Email)
+                </li>
+            }
+        </ul>
+    }
+
+    @if (selectedUsers.Any())
+    {
+        <div class="mt-3">
+            <strong>Users to invite:</strong>
+            <div class="selected-user-list">
+                @foreach (var user in selectedUsers)
+                {
+                    <span class="badge bg-primary me-2">
+                        @user.Username
+                        <button type="button" class="btn-close btn-close-white btn-sm ms-2" @onclick="() => RemoveUser(user)" />
+                    </span>
+                }
+            </div>
+        </div>
+    }
+
+    <button class="btn btn-success mt-3" @onclick="SubmitInvites">Invite</button>
+</div>
+
+@code {
+    private List<UserSearchList> searchResults = new();
+    private List<UserSearchList> selectedUsers = new();
+
+    private CancellationTokenSource debounceCts;
+    private const int DebounceDelay = 300; // milliseconds
+
+    [Parameter] 
+    public string ProjectId { get; set; }
+
+    private string _searchText = "";
+    private string searchText
+    {
+        get => _searchText;
+        set
+        {
+            if (_searchText != value)
+            {
+                _searchText = value;
+                DebounceSearch(); // debounce logic
+            }
+        }
+    }
+
+    private void DebounceSearch()
+    {
+        debounceCts?.Cancel(); // cancel the last one if still running
+        debounceCts = new CancellationTokenSource();
+
+        var token = debounceCts.Token;
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(DebounceDelay, token);
+                if (!token.IsCancellationRequested)
+                {
+                    await InvokeAsync(OnSearchChanged);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+
+            }
+        });
+    }
+
+    private async Task OnSearchChanged()
+    {
+        if (searchText.Length >= 1)
+        {
+            Console.WriteLine("Debounced search for: " + searchText);
+            searchResults = await _getProjectsService.SearchByUsernameOrEmail(searchText);
+        }
+        else
+        {
+            searchResults.Clear();
+        }
+    }
+
+    private void AddUser(UserSearchList user)
+    {
+        if (!selectedUsers.Any(u => u.UserId == user.UserId))
+        {
+            selectedUsers.Add(user);
+            searchText = "";
+        }
+    }
+
+    private void RemoveUser(UserSearchList user)
+    {
+        selectedUsers.Remove(user);
+    }
+
+    private async Task SubmitInvites()
+    {
+        var userIds = selectedUsers.Select(u => u.UserId).ToList();
+        await _getProjectsService.InviteUsersToProject(ProjectId, userIds);
+
+        selectedUsers.Clear();
+        searchText = "";
+        searchResults.Clear();
+    }
+}

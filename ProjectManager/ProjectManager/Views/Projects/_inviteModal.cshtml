@@ -1,0 +1,38 @@
+﻿@using ProjectManager.Models.ViewModels
+@model AddProjectViewModel
+
+<div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inviteModalLabel">Invite People to Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="inviteForm" method="post">
+                    <div class="mb-3">
+                        <label for="userSearchInput" class="form-label">Search for users</label>
+                        <input type="text" id="userSearchInput" class="form-control" placeholder="Search users by name or email..." required />
+                    </div>
+
+                    <div id="searchResults" class="mt-2"></div>
+
+                    <hr />
+                    <h6>Selected People</h6>
+                    <ul id="selectedUsersList" class="list-group mb-3"></ul>
+
+                    <button type="submit" class="btn btn-primary" id="inviteUsersBtn">Invite</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+            
+    </script>
+
+}

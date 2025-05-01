@@ -1,9 +1,13 @@
-﻿@model Project
+﻿@using ProjectManager.Components
+@model Project
 
 <div class="button_parent" style="position:relative;">
     <div class="AddItem_div">
         <button type="button" class="btn btn-success" id="showModalButton">
             Add Item
+        </button>
+        <button type="button" class="btn btn-success" id="InvitePeople">
+            + Invite
         </button>
     </div>
 </div>
@@ -24,12 +28,14 @@
     <p>@member.Role</p>
 }
 
+<component type="typeof(TaskList)" render-mode="ServerPrerendered" param-ProjectId="@(Model._id.ToString())" />
+<component type="typeof(SearchUsers)" render-mode="ServerPrerendered" param-ProjectId="@Model._id.ToString()" />
+
 
 
 @section Scripts {
-
+    <script src="_framework/blazor.server.js"></script>
     <script>
-
 
         $(document).ready(function () {
             function loadModal() {
@@ -39,20 +45,26 @@
                 });
             }
 
+            function loadInviteModal() {
+            $.get('@Url.Action("InviteModal", "Projects")', function (response) {
+                $('#modalContainer').html(response);
+                $('#inviteModal').modal('show');
+            });
+            }
+
             // Load modal on button click
             $('#showModalButton').click(loadModal);
+            $('#InvitePeople').click(loadInviteModal);
 
 
             // Delegate the form submission to dynamically loaded content
             $('#modalContainer').on('submit', '#addTaskform', function (e) {
                 e.preventDefault();
-                var form = $(this);
-                console.log(form);
 
                 $.ajax({
                     url: '@Url.Action("AddTask", "Projects", new { project_id = @Model._id })',
                     type: 'POST',
-                    data: form.serialize(),
+                    data:$(this).serialize(),
                     success: function (response) {
                     if (response.success) {
                         $('#addTaskModal').modal('hide');

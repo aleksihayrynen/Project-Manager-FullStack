@@ -43,6 +43,11 @@ namespace ProjectManager.Models.Services
                 return database;
         }
 
+        public static IMongoCollection<T> GetCollection<T>() where T : DB_SaveableObject
+        {
+            string collectionName = typeof(T).Name;
+            return GetDB().GetCollection<T>(collectionName);
+        }
 
         public static async Task Save<T>(T entity) where T : DB_SaveableObject
         {
