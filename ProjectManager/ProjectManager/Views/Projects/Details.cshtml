@@ -13,6 +13,13 @@
 </div>
 
 <div id="modalContainer"></div>
+<div id="searchUsersModal" class="InviteModal_container">
+    <div id="InviteModal_overlay"></div>
+    <div class="modal-content">
+        <button class="close_InviteModal_button" onclick="hideModal()">✖</button>
+        <component type="typeof(SearchUsers)" render-mode="ServerPrerendered" param-ProjectId="@Model._id.ToString()" />
+    </div>
+</div>
 
 <h1>plsss</h1>
 <h1>@Model.Title</h1>
@@ -24,18 +31,23 @@
 <h3>Members</h3>
 @foreach (var member in Model.Members)
 {
+    <p>@member.Username</p>
     <p>@member.UserId</p>
     <p>@member.Role</p>
 }
 
 <component type="typeof(TaskList)" render-mode="ServerPrerendered" param-ProjectId="@(Model._id.ToString())" />
-<component type="typeof(SearchUsers)" render-mode="ServerPrerendered" param-ProjectId="@Model._id.ToString()" />
+
 
 
 
 @section Scripts {
     <script src="_framework/blazor.server.js"></script>
     <script>
+
+        function hideModal() {
+            searchUsersModal.style.display = "none";
+        }
 
         $(document).ready(function () {
             function loadModal() {
@@ -45,16 +57,8 @@
                 });
             }
 
-            function loadInviteModal() {
-            $.get('@Url.Action("InviteModal", "Projects")', function (response) {
-                $('#modalContainer').html(response);
-                $('#inviteModal').modal('show');
-            });
-            }
-
             // Load modal on button click
             $('#showModalButton').click(loadModal);
-            $('#InvitePeople').click(loadInviteModal);
 
 
             // Delegate the form submission to dynamically loaded content
@@ -82,6 +86,24 @@
                 }
                 });
             });
+
+        const modalContainer = document.getElementById("searchUsersModal");
+
+        document.getElementById("InvitePeople").addEventListener("click", () => {
+            modalContainer.style.display = "block";
+            document.getElementById("searchUsersModal").style.display = "block"
+
+        });
+
+
+        var modal = document.getElementById("InviteModal_overlay");
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            searchUsersModal.style.display = "none";
+          }
+        }
+
         });
     </script>
 

@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System.Text.RegularExpressions;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace ProjectManager.Models.Services
@@ -27,19 +28,26 @@ namespace ProjectManager.Models.Services
             return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
 
-        public async Task<List<UserSearchList>> SearchByUsernameOrEmail(string query)
+        public async Task<List<UserSearchList>> SearchByUsernameOrEmail(string query, List<ObjectId> excludeUserIds)
         {
-            var filter = Builders<User>.Filter.Or(
-                Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression(query, "i")), //i = case is ignored, Insensitive
-                Builders<User>.Filter.Regex(u => u.Email, new BsonRegularExpression(query, "i")),   //"^" +  Regex.Escape(query), "i"  for starts with
-                Builders<User>.Filter.Regex(u => u.FirstName, new BsonRegularExpression(query, "i")),
-                Builders<User>.Filter.Regex(u => u.LastName, new BsonRegularExpression(query, "i"))
-            );
 
+            //Search logic
+            var searchFilter = Builders<User>.Filter.Or(
+                Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression(query, "i")),
+                Builders<User>.Filter.Regex(u => u.Email, new BsonRegularExpression(query, "i")),
+                Builders<User>.Filter.Regex(u => u.FirstName, new BsonRegularExpression("^" + Regex.Escape(query), "i")),
+                Builders<User>.Filter.Regex(u => u.LastName, new BsonRegularExpression("^" + Regex.Escape(query), "i"))
+            );
+            // Add the logic for removing the excluded users
+            var combinedFilter = Builders<User>.Filter.And(
+                searchFilter,
+                Builders<User>.Filter.Nin(u => u._id, excludeUserIds) // Skip these users
+            );
+            //Query DB for the matching users
             var users = await MongoManipulator
                 .GetCollection<User>()
-                .Find(filter)
-                .Limit(10) //Only query for first 10 from the DB
+                .Find(combinedFilter)
+                .Limit(10)  // Only take the first 10 matches to avoid massive search like "a"
                 .ToListAsync();
 
             return users.Select(u => new UserSearchList
@@ -49,7 +57,6 @@ namespace ProjectManager.Models.Services
                 Email = u.Email,
                 FirstName = u.FirstName,
                 LastName = u.LastName
-                
             }).ToList();
         }
 

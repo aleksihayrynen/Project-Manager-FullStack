@@ -22,6 +22,14 @@
             }
         </ul>
     }
+    else if (_searchText.Length >= 1)
+    {
+        <ul class="list-group">
+            <li class="list-group-item">
+                0 people found
+            </li>
+        </ul>
+    }
 
     @if (selectedUsers.Any())
     {
@@ -39,7 +47,7 @@
         </div>
     }
 
-    <button class="btn btn-success mt-3" @onclick="SubmitInvites">Invite</button>
+    <button id="send_invite_button" class="btn btn-success mt-3" @onclick="SubmitInvites">Invite</button>
 </div>
 
 @code {
@@ -49,8 +57,9 @@
     private CancellationTokenSource debounceCts;
     private const int DebounceDelay = 300; // milliseconds
 
-    [Parameter] 
+    [Parameter]
     public string ProjectId { get; set; }
+    private List<ProjectMembers> CurrentMembers = new();
 
     private string _searchText = "";
     private string searchText
@@ -62,6 +71,18 @@
             {
                 _searchText = value;
                 DebounceSearch(); // debounce logic
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(ProjectId))
+        {
+            var project = await MongoManipulator.GetObjectById<Project>(ObjectId.Parse(ProjectId));
+            if (project != null)
+            {
+                CurrentMembers = project.Members;
             }
         }
     }
@@ -79,7 +100,7 @@
             {
                 await Task.Delay(DebounceDelay, token);
                 if (!token.IsCancellationRequested)
-                {
+                {   
                     await InvokeAsync(OnSearchChanged);
                 }
             }
@@ -94,13 +115,32 @@
     {
         if (searchText.Length >= 1)
         {
-            Console.WriteLine("Debounced search for: " + searchText);
-            searchResults = await _getProjectsService.SearchByUsernameOrEmail(searchText);
+            Console.WriteLine("Searching for: " + searchText);
+
+            var excludeUserIds = new List<ObjectId>();
+
+            // Add current project members
+            if (CurrentMembers != null)
+                excludeUserIds.AddRange(CurrentMembers.Select(m => m.UserId));
+
+            // Add already selected users
+            if (selectedUsers != null)
+                excludeUserIds.AddRange(selectedUsers.Select(u => u.UserId));
+
+            // Remove duplicates
+            excludeUserIds = excludeUserIds.Distinct().ToList();
+
+            // Call the backend search
+            var foundUsers = await _getProjectsService.SearchByUsernameOrEmail(searchText, excludeUserIds);
+
+            searchResults = foundUsers;
         }
         else
         {
             searchResults.Clear();
         }
+
+        StateHasChanged();
     }
 
     private void AddUser(UserSearchList user)
@@ -125,5 +165,6 @@
         selectedUsers.Clear();
         searchText = "";
         searchResults.Clear();
+
     }
 }
