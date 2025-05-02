@@ -1,42 +1,69 @@
 ﻿@using ProjectManager.Components
-@model Project
+@using ProjectManager.Models.ViewModels
+@model ProjectWithTaskViewModel
 
 <div class="button_parent" style="position:relative;">
     <div class="AddItem_div">
-        <button type="button" class="btn btn-success" id="showModalButton">
-            Add Item
-        </button>
-        <button type="button" class="btn btn-success" id="InvitePeople">
-            + Invite
-        </button>
+        <div class="project_search_group">
+            <input class="project_searchbar" />
+            <button>Search</button>
+        </div>
+        <div class="project_details_buttons">
+            <button type="button" class="btn btn-success" id="showModalButton">
+                Add Item
+            </button>
+            <button type="button" class="btn btn-success" id="InvitePeople">
+                + Invite
+            </button>
+        </div>
+        
     </div>
 </div>
 
 <div id="modalContainer"></div>
 <div id="searchUsersModal" class="InviteModal_container">
     <div id="InviteModal_overlay"></div>
-    <div class="modal-content">
+    <div class="Invitemodal-content">
         <button class="close_InviteModal_button" onclick="hideModal()">✖</button>
-        <component type="typeof(SearchUsers)" render-mode="ServerPrerendered" param-ProjectId="@Model._id.ToString()" />
+        <component type="typeof(SearchUsers)" render-mode="ServerPrerendered" param-ProjectId="@Model.Project._id.ToString()" />
     </div>
 </div>
 
-<h1>plsss</h1>
-<h1>@Model.Title</h1>
-<p>Created: @Model.CreatedAt</p>
-<p>Open Invite: @Model.OpenInvite</p>
-<p>Open Create: @Model.OpenCreate</p>
+<div class="project_nav_items">
 
+</div>
+<div class"timefilters">
 
-<h3>Members</h3>
-@foreach (var member in Model.Members)
-{
-    <p>@member.Username</p>
-    <p>@member.UserId</p>
-    <p>@member.Role</p>
-}
+</div>
+<div class="project_info_boxes">
+    <div class="info_box">
+        <div class="infbox_pic">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#ff4545"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+        </div>
+        <div class="infobox_text">
+            <p>Tasks Late: @Model.LateTask</p>
+        </div>
+    </div>
+    <div class="info_box">
+        <div class="infbox_pic">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#FFFF55"><path d="m40-120 440-760 440 760H40Zm104-60h672L480-760 144-180Zm340.18-57q12.82 0 21.32-8.68 8.5-8.67 8.5-21.5 0-12.82-8.68-21.32-8.67-8.5-21.5-8.5-12.82 0-21.32 8.68-8.5 8.67-8.5 21.5 0 12.82 8.68 21.32 8.67 8.5 21.5 8.5ZM454-348h60v-224h-60v224Zm26-122Z" /></svg>
+        </div>
+        <div class="infobox_text">
+            <p>Not implemented</p>
+        </div>
+    </div>
+    <div class="info_box">
+        <div class="infbox_pic">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#146c43"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+        </div>
+        <div class="infobox_text">
+            <p>Not implemented</p>
+        </div>
+    </div>
 
-<component type="typeof(TaskList)" render-mode="ServerPrerendered" param-ProjectId="@(Model._id.ToString())" />
+</div>
+
+<component type="typeof(TaskList)" render-mode="ServerPrerendered" param-ProjectId="@(Model.Project._id.ToString())" />
 
 
 
@@ -66,7 +93,7 @@
                 e.preventDefault();
 
                 $.ajax({
-                    url: '@Url.Action("AddTask", "Projects", new { project_id = @Model._id })',
+                    url: '@Url.Action("AddTask", "Projects", new { project_id = @Model.Project._id })',
                     type: 'POST',
                     data:$(this).serialize(),
                     success: function (response) {

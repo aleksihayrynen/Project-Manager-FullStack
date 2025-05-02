@@ -5,18 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using ProjectManager.Models.ViewModels;
 using ProjectManager.Models.Services;
-using ExpenseTracker.Models.Utils;
 using ProjectManager.Models;
+using ProjectManager.Models.Utils;
+using static ProjectManager.Models.TaskItem;
 
 namespace ProjectManager.Controllers
 {
     public class ProjectsController : Controller
     {
         private readonly GetProjectsService _getProjectsService;
-        public ProjectsController(GetProjectsService getProjectsService)
+        private readonly GetTaskService _getTasksService;
+
+        public ProjectsController(GetProjectsService getProjectsService, GetTaskService getTasksService)
         {
             _getProjectsService = getProjectsService;
+            _getTasksService = getTasksService;
         }
+
 
         public IActionResult addTaskModal()
         {
@@ -142,9 +147,12 @@ namespace ProjectManager.Controllers
                 if (HttpContext.User.Claims != null)
                 {
                     var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-                    var test = new ObjectId(userId);
-                    var projects = await _getProjectsService.GetProjectsByUserId(test);
-                    return View(projects);
+
+                    if (string.IsNullOrEmpty(userId))
+                        throw new InvalidOperationException("User is null. Unable to proceed.");
+
+                    var result = await _getProjectsService.GetProjectsWithTaskInfo(new ObjectId(userId));
+                    return View(result);
                 }
                 else
                 {
@@ -164,14 +172,12 @@ namespace ProjectManager.Controllers
         public async Task<IActionResult> Details(string id, string project_title)
         
         {
-            ViewData["Title"] = project_title;
+            ViewData["Title"] = $"Project - {UtilityFunctions.CapitalizeFirstLetter(project_title)}";
             var project_id = new ObjectId(id);
-            var project = await _getProjectsService.GetProjectById(project_id);
+            var result = await _getTasksService.GetProjectWithTasks(project_id);
+;
 
-            //if (project == null)
-            //    return NotFound();
-
-            return View(project);
+            return View(result);
         }
 
 

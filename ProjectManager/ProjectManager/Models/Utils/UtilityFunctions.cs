@@ -1,4 +1,4 @@
-﻿namespace ExpenseTracker.Models.Utils
+﻿namespace ProjectManager.Models.Utils
 {
     public class UtilityFunctions
     {

@@ -7,7 +7,7 @@
     --colourpalette-Lightgreen: #D8E299;
     --colourpalette-reviewBlue: #6379EB;
     --colourpalette-nav_bg: #1E1E1E;
-
+    --colourpalette-project-box: #353737;
     --navbar-height: 80px;
 }
 
@@ -117,10 +117,14 @@ header{
     opacity:0;
 }
 
-.container {
+.container_own {
     min-height: calc(100vh - var(--navbar-height) + 15px); /*  +15px is for the bottom margin in nav*/
     padding-left:80px;
     padding-top: 2em;
+    margin:auto;
+    width:90vw;
+    margin-bottom:60px;
+
 }
 
 
@@ -172,14 +176,15 @@ nav {
 
 
 .profilepicture_container {
-display: flex;
-justify-content: center;
-align-items: center;
-width: 50px;
-height: 50px;
-border-radius: 50%;
-border: 1px solid white;
-overflow: clip;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid black;
+    overflow: clip;
+    background-color: #d5d4d4;
 }
 
 .profilepicture_container:hover {
@@ -325,7 +330,7 @@ footer {
 }
 
 .btn:hover {
-    background-color: #555;
+    background-color: #146c43;
 }
 
 .btn-signup {
@@ -430,10 +435,9 @@ footer {
 }
 
 
-.modal-content {
+.Invitemodal-content {
     position: relative;
     z-index: 2;
-    background-color: white;
     margin: 100px auto;
     padding: 1rem;
     width: 400px;
@@ -460,7 +464,47 @@ footer {
     position:absolute;
     left: 30px;
 }
+#InvitePeople{
+    margin-left: 15px;
+}
 
+.project_info_boxes{
+    display:flex;
+    margin-bottom:4rem;
+    flex-wrap:wrap;
+    
+    
+}
+
+.info_box {
+    height: 60px;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    border-bottom: solid 1px var(--colourpalette-pink);
+    padding: 0 ;  
+}
+.infbox_pic {
+    width: 30%;
+    min-width:40px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content:center;
+}
+
+.infobox_text {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.infobox_text p {
+    margin-bottom: 0px;
+    font-weight: 600;
+    font-size:1rem
+}
 
 
 
@@ -472,12 +516,12 @@ footer {
 .register-container {
     display: flex;
     width: 80%;
-    max-width: 1200px;
+    max-width: 1000px;
     background-color: var(--colourpalette-nav_bg);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    margin-left: 80px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    margin: auto;
 }
 
 .register-image {
@@ -551,11 +595,11 @@ footer {
     border-color: #0056b3;
 }
 
-    .toggle-btn.active {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: white;
-    }
+.toggle-btn.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
 
 
 .modal-content {
@@ -569,7 +613,112 @@ footer {
 }
 
 
+.AddItem_div {
+    display: flex;
+    max-width: 90%;
+    margin-bottom: 4vh;
+    align-items: center;
+    justify-content: space-between;
+}
 
+.project_link_container {
+    overflow: clip;
+    height:100%;
+    width:100%;
+}
+
+#showModalButton {
+}
+
+
+.project_container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 100%;
+    max-width: 90%;
+    gap: 40px 40px;
+    justify-content: flex-start;
+    margin: auto;
+}
+
+.project_div {
+    height: 350px;
+    width: 350px;
+    color: var(--colourpalette-white);
+    padding: 15px 20px;
+    background: linear-gradient(var(--colourpalette-project-box), var(--colourpalette-project-box)), /* actual content bg */
+    linear-gradient(to right, #EA6077, #D8E299, #5F9C45) border-box; /* gradient border */
+    border-radius: 10%;
+    border: 2px solid transparent;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.project_link{
+    color: var(--colourpalette-white);
+    text-decoration:none;
+}
+
+.Members_owner{
+    display:flex;
+    flex-direction:row;
+}
+.picture_rower {
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+}
+.Members {
+    display:flex;
+    flex-direction:column;
+    width: 70%
+}
+#member_extra {
+    margin-bottom: 0px;
+    padding:0 10px;
+}
+
+.Owner{
+    display:flex;
+    flex-direction:column;
+    width:30%;
+    align-items:center;
+}
+
+.picture_rower .profilepicture_container:not(:first-child) {
+    /* your styles here */
+    margin-left: -17px;
+}
+
+.Review, .Assigned_tasks{
+    margin-top:15px;
+}
+
+.project_subtitle{
+    color: var(--colourpalette-Lightgreen);
+}
+
+.project_div p {
+    font-weight: 600;
+}
+
+#assigned_task_text{
+    color: var(--colourpalette-darkgreen);
+}
+#Review_false_text {
+    color: #ff4545;
+}
+#Review_text {
+    color: var(--colourpalette-reviewBlue);
+}
+#Late_task_text {
+    color: #ff4545;
+}
+
+.project_searchbar{
+    border-radius:5px;
+}
 
 
 
@@ -586,7 +735,7 @@ footer {
         overflow: hidden;
     }
 
-    .container {
+    .container_own {
         min-height: calc(100vh - var(--navbar-height) + 15px); /*  +15px is for the bottom margin in nav*/
         padding-left: var(--bs-gutter-x, .75rem);
     }
@@ -611,5 +760,13 @@ footer {
         display: flex;
         width: 100%;
         margin-left: 0px;
+    }
+
+    .info_box {
+        width: 200px;
+        display: flex;
+        align-items: center;
+        border-bottom: none;
+        padding: 0;
     }
 }

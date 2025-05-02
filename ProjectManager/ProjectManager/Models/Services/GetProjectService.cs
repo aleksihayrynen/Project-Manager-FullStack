@@ -1,6 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using ProjectManager.Models.ViewModels;
+using static ProjectManager.Models.TaskItem;
 
 namespace ProjectManager.Models.Services
 {
@@ -15,6 +17,13 @@ namespace ProjectManager.Models.Services
              return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
 
+        public async Task<List<TaskItem>> GetTasksByProjectIds(List<ObjectId> projectIds)
+        {
+            var filter = Builders<TaskItem>.Filter.In(t => t.ProjectId, projectIds);
+            return await MongoManipulator.GetAllObjectsByFilter(filter); 
+        }
+
+
         public async Task<Project> GetProjectById(ObjectId id)
         {
             return await MongoManipulator.GetObjectById<Project>(id);
@@ -27,6 +36,33 @@ namespace ProjectManager.Models.Services
 
             return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
+
+        public async Task<List<ProjectWithTaskViewModel>> GetProjectsWithTaskInfo(ObjectId userId)
+        {
+            var projects = await GetProjectsByUserId(userId);
+            var projectIds = projects.Select(p => p._id).ToList();
+
+            var allTasks = await GetTasksByProjectIds(projectIds);
+
+            return projects.Select(project =>
+            {
+                var tasks = allTasks.Where(t => t.ProjectId == project._id).ToList();
+
+                return new ProjectWithTaskViewModel
+                {
+                    Project = project,
+                    TaskCount = tasks.Count,
+                    TaskInReview = tasks.Count(t => t.State == TaskState.InReview),
+                    LateTask =  tasks.Count(t => t.DueDate <  DateTime.Today),
+                    NextTaskDueDate = tasks
+                    .Where(t => t.State != TaskState.Completed)
+                    .OrderBy(t => t.DueDate)
+                    .Select(t => (DateTime?)t.DueDate)
+                    .FirstOrDefault()
+                };
+            }).ToList();
+        }
+
 
         public async Task<List<UserSearchList>> SearchByUsernameOrEmail(string query, List<ObjectId> excludeUserIds)
         {

@@ -1,35 +1,85 @@
-﻿@model List<Project>
+﻿@model List<ProjectWithTaskViewModel>
+@using ProjectManager.Models.Utils;
+@using ProjectManager.Models.Services;
+@using ProjectManager.Models.ViewModels;
+@using MongoDB.Bson;
 
 <div class="button_parent" style="position:relative;">
     <div class="AddItem_div">
+        <div class=""></div>
+        <div class="project_search_group">
+            <input class="project_searchbar" />
+            <button>Search</button>
+        </div>
+
         <button type="button" class="btn btn-success" id="showModalButton">
-            Add Item
+            New Project
         </button>
     </div>
 </div>
 
 <div id="modalContainer"></div>
 
+<div class="project_container">
+    @foreach (var project in Model)
+    {
+        <a class="project_link" href="@Url.Action("Details", "Projects", new { id = project.Project._id, project_title = project.Project.Title })">
+            <div class="project_div">
+                <div class="project_link_container">
+                    <h2>@UtilityFunctions.CapitalizeFirstLetter(project.Project.Title)</h2>
+                    <p class="project_subtitle">Project idea/Task</p>
+                    <div class="Members_owner">
+                        <div class="Members">
+                            <p>Members: @project.Project.Members.Count</p>
+                            <div class="picture_rower">
+                                <div class="profilepicture_container">
+                                    <img class="profile_picture" src="/Media/flover.png" />
+                                </div>
+                                <div class="profilepicture_container">
+                                    <img class="profile_picture" src="/Media/flover.png" />
+                                </div>
+                                <div class="profilepicture_container">
+                                    <img class="profile_picture" src="/Media/flover.png" />
+                                </div>
+                                @if (project.Project.Members.Count - 3 > 0)
+                                {
+                                    <p id="member_extra">+ @(project.Project.Members.Count - 3)</p>
+                                }
+                            </div>
+                            <div class="Assigned_tasks">
+                                <p id="assigned_task_text">Assigned Task's: @project.TaskCount</p>
+                            </div>
+                        </div>
+                        <div class="Owner">
+                            <p>Owner:</p>
+                            <div class="profilepicture_container">
+                                <img class="profile_picture" src="/Media/flover.png" />
+                            </div>
+                            <div class="Review">
+                                @if (project.Project.UseReview == false)
+                                {
+                                    <p id="Review_false_text"></p>
+                                }
+                                else
+                                {
+                                    <p id="Review_text">In Review: @project.TaskInReview</p>
+                                }
+                            </div>
+                        </div> 
+                        
+                    </div>
+                    
+                        <p id="Late_task_text">Late task: @project.LateTask</p>
+                        <p class="Next_due_task">
+                            Next due task: @(project.NextTaskDueDate?.ToString("yyyy-MM-dd") ?? " -")
+                        </p>
 
-@foreach (var project in Model)
-{
-    <div class="project_div">
-        <a class="project_link" href="@Url.Action("Details", "Projects", new { id = project._id, project_title = project.Title })">
-            <h1>@project.Title</h1>
-            <p>Created: @project.CreatedAt</p>
-            <p>Open Invite: @project.OpenInvite</p>
-            <p>Open Create: @project.OpenCreate</p>
-
-            <h4>Members:</h4>
-            @foreach (var member in project.Members)
-            {
-                <p>UserId: @member.Username</p>
-                <p>Role: @member.Role</p>
-            }
+                </div>
+            </div>
         </a>
-        
-    </div>
-}
+    }
+</div>
+
 
 @section Scripts {
 

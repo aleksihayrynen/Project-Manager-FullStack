@@ -49,6 +49,15 @@ namespace ProjectManager.Models.Services
             return GetDB().GetCollection<T>(collectionName);
         }
 
+        public static async Task<long> GetCountbyId<T>(ObjectId id) where T : DB_SaveableObject
+        {
+            string collectionName = typeof(T).Name;
+            var collection = GetDB().GetCollection<T>(collectionName);
+            var filter = Builders<T>.Filter.Eq(e => e._id, id);
+            return await collection.CountDocumentsAsync(filter);
+        }
+
+
         public static async Task Save<T>(T entity) where T : DB_SaveableObject
         {
             string collectionName = typeof(T).Name;
