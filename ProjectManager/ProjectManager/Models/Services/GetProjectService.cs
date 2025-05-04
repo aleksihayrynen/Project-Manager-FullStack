@@ -53,7 +53,7 @@ namespace ProjectManager.Models.Services
                     Project = project,
                     TaskCount = tasks.Count,
                     TaskInReview = tasks.Count(t => t.State == TaskState.InReview),
-                    LateTask =  tasks.Count(t => t.DueDate <  DateTime.Today),
+                    LateTask =  tasks.Count(t => t.State == TaskState.InProgress && t.DueDate < DateTime.Today),
                     NextTaskDueDate = tasks
                     .Where(t => t.State != TaskState.Completed)
                     .OrderBy(t => t.DueDate)

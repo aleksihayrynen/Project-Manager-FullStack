@@ -4,39 +4,75 @@
 @using MongoDB.Bson;
 
 <h3>TaskList</h3>
-<table>
-    <thead>
-        <tr>
-            <th>
-                Assigned
-            </th>
-            <th>
-                Task state
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (taskitems != null)
-        {
-            @foreach (var item in taskitems)
+<div class="table-scroll-container">
+    <table class="tasktable">
+        <thead>
+            <tr class="tasktable_heading">
+                <th>
+                    Assigned
+                </th>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Created By
+                </th>
+                <th>
+                    Created date
+                </th>
+                <th>
+                    Due Date
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Mark as done
+                </th>
+                <th>
+                    Messages
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (taskitems != null)
+            {
+                @foreach (var item in taskitems)
+                {
+                    <tr>
+                        <td>
+                            <div class="profilepicture_container_tasklist">
+                                <img class="profile_picture" src="/Media/flover.png" />
+                            </div>
+                        </td>
+                        <td>@item.Title</td>
+                        <td>
+                            <div class="profilepicture_container_tasklist">
+                                <img class="profile_picture" src="/Media/flover.png" />
+                            </div>
+                        </td>
+                        <td>@item.CretedDate.ToString("d", System.Globalization.CultureInfo.CurrentCulture)</td>
+                        <td>@item.DueDate.ToString("d", System.Globalization.CultureInfo.CurrentCulture)</td>
+                        <td>@item.State</td>
+                        <td><button id="markasdone_button" class="btn btn-success">Done</button></td>
+                        <td><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M240-400h320v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm126-240h594v-480H160v525l46-45Zm-46 0v-480 480Z" /></svg></td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@item.Title</td>
-                    <td>@item.State</td>
+                    <td>No data</td>
                 </tr>
             }
-        }
-        else
-        {
-            <tr>
-                <td>No data</td>
-            </tr>
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
+
 
 @code {
     private List<TaskItem>? taskitems;
+
 
     [Parameter]
     public string ProjectId { get; set; }

@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+﻿ using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectManager.Models.ViewModels;
 using static ProjectManager.Models.TaskItem;
@@ -22,22 +22,19 @@ namespace ProjectManager.Models.Services
 
 
 
-        public async Task<ProjectWithTaskViewModel> GetProjectWithTasks(ObjectId project_id)
+        public async Task<ProjectDetailsViewModel> GetProjectWithTasks(ObjectId project_id)
         {
             var project = await MongoManipulator.GetObjectById<Project>(project_id);
             var allTasks = await GetTasksByProjectId(project_id);
 
-            return new ProjectWithTaskViewModel
+            var now = DateTime.UtcNow;
+
+            return new ProjectDetailsViewModel
             {
                 Project = project,
-                TaskCount = allTasks.Count,
-                TaskInReview = allTasks.Count(t => t.State == TaskState.InReview),
-                LateTask = allTasks.Count(t => t.DueDate < DateTime.Today),
-                NextTaskDueDate = allTasks
-                    .Where(t => t.State != TaskState.Completed)
-                    .OrderBy(t => t.DueDate)
-                    .Select(t => (DateTime?)t.DueDate)
-                    .FirstOrDefault()
+                CompletedTask = allTasks.Where(t => t.State == TaskState.Completed).ToList(),
+                LateTask = allTasks.Where(t => t.State == TaskState.InProgress && t.DueDate < DateTime.Today).ToList(),
+                AssignedTask = allTasks.Where(t => t.State == TaskState.InProgress).ToList()
             };
         }
     }

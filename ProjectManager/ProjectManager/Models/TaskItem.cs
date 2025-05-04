@@ -13,7 +13,9 @@ namespace ProjectManager.Models
 
         public ObjectId CreatedBy { get; set; } // The user's ObjectId
         public bool Completed { get; set; }
+        public  DateTime CretedDate { get; set; }
         public DateTime DueDate { get; set; }
+        
 
         public enum TaskState
         {

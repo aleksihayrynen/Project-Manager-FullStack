@@ -66,6 +66,7 @@ header{
     transition: 300ms ease-in-out;
     overflow: hidden;
     overflow-y:auto;
+    z-index:1;
 }
 
 .side_nav ul{
@@ -187,10 +188,22 @@ nav {
     background-color: #d5d4d4;
 }
 
+.profilepicture_container_tasklist {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid black;
+    overflow: clip;
+    background-color: #d5d4d4;
+}
+
 .profilepicture_container:hover {
-cursor: pointer;
-border-color: var(--colourpalette-pink);
-border-width:2px;
+    cursor: pointer;
+    border-color: var(--colourpalette-pink);
+    border-width: 2px;
 }
 
 /* https://copy-paste-css.com/ */
@@ -716,10 +729,39 @@ footer {
     color: #ff4545;
 }
 
-.project_searchbar{
-    border-radius:5px;
+
+
+.tasktable{
+    width:100%;
+}
+.table-scroll-container {
+    overflow-x: auto;
+    max-width: 100%;
 }
 
+.project_searchbar {
+    border-radius: 5px;
+}
+
+.tasktable_heading th{
+    padding:1em;
+
+}
+
+.tasktable td {
+    padding: 10px 0;
+    padding-left:1em;
+    border-bottom: solid 1px var(--colourpalette-white);
+}
+
+.tasktable_heading th, td {
+    padding-right: 2em;
+}
+#markasdone_button {
+    height:40px;
+    width: 70px;
+    padding:0;
+}
 
 
 

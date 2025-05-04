@@ -75,6 +75,7 @@ namespace ProjectManager.Controllers
                         AssignedTo = new ObjectId(model.AssignedTo),
                         CreatedBy = new ObjectId(userId),
                         Completed = false,
+                        CretedDate = DateTime.Now,
                         DueDate = model.DueDate,
                         State = TaskItem.TaskState.InProgress
                     };
