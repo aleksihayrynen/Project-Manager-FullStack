@@ -6,15 +6,28 @@
 <section class="intro-section">
     <div class="text-side">
         <h1>OpenSource: Project Manager</h1>
-        <p>Start your journey with us today. Sign up or log in to unlock amazing benefits.</p>
-        <div class="buttons">
-            <form asp-action="Register" asp-controller="Account" method="get">
-                <button class="btn btn-signup" type="submit">Sign Up</button>
-            </form>
-            <form asp-action="Login" asp-controller="Account" method="get">
-                <button class="btn btn-login" type="submit">Login</button>
-            </form>
-        </div>
+       
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <p>Start making your projects to make collaboration easier in the FUTURE.</p>
+            <div class="buttons">
+                <form asp-action="Index" asp-controller="Projects" method="get">
+                    <button class="btn btn-login" >Projects</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <p>Start your journey with us today. Sign up or log in to unlock amazing benefits.</p>
+            <div class="buttons">
+                <form asp-action="Register" asp-controller="Account" method="get">
+                    <button class="btn btn-signup" type="submit">Sign Up</button>
+                </form>
+                <form asp-action="Login" asp-controller="Account" method="get">
+                    <button class="btn btn-login" type="submit">Login</button>
+                </form>
+            </div>
+        }
     </div>
     <div class="image-side">
         <div class="image-cut">

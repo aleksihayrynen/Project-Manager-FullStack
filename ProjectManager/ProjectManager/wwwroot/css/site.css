@@ -376,6 +376,15 @@ footer {
     background-color: #218838;
 }
 
+.btn-warning:hover {
+    background-color:#ffc720;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+}
+
+
 .btn-login {
     background-color: #007bff;
 }

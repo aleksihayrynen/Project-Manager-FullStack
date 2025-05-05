@@ -11,6 +11,15 @@ namespace ProjectManager.Models
         public string? Description { get; set; }
         public ObjectId AssignedTo { get; set; }
 
+        [BsonIgnore]
+        public string AssignedToString
+        {
+            get => AssignedTo.ToString();
+            set => AssignedTo = new ObjectId(value);
+        }
+
+
+
         public ObjectId CreatedBy { get; set; } // The user's ObjectId
         public bool Completed { get; set; }
         public  DateTime CretedDate { get; set; }
@@ -24,7 +33,17 @@ namespace ProjectManager.Models
             Completed = 2
         }
 
-        public TaskState State { get; set; }
+        private TaskState _state;
+        [BsonElement("State")]
+        public TaskState State
+        {
+            get => _state;
+            set
+            {
+                _state = value;
+                Completed = (_state == TaskState.Completed);
+            }
+        }
 
 
 

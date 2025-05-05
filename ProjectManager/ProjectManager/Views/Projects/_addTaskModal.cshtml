@@ -1,4 +1,5 @@
 ﻿@using ProjectManager.Models.ViewModels
+@using ProjectManager.Models.Utils
 @model AddTaskViewModel
 
 <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
@@ -27,7 +28,7 @@
                         <select asp-for="AssignedTo" class="form-control">
                             @foreach (var member in Model.UserInfo)
                             {
-                                <option value="@member.UserId"> @member.FirstName </option>
+                                <option value="@member.UserId"> @UtilityFunctions.CapitalizeFirstLetter(member.Username) - @UtilityFunctions.CapitalizeFirstLetter(member.FirstName) @UtilityFunctions.CapitalizeFirstLetter(member.LastName) </option>
                             }
                         </select>
                         <input asp-for="UserInfo" type="hidden" value="@Model.UserInfo" />

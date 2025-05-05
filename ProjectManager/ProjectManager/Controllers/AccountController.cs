@@ -8,9 +8,11 @@ using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectManager.Controllers
 {
+    
     public class AccountController : Controller
     {
 
@@ -19,10 +21,19 @@ namespace ProjectManager.Controllers
             return RedirectToAction("Login");
         }
 
+        [HttpGet]
         public IActionResult Login()
         {
-            ViewData["Title"] = "Login";
-            return View();
+            if (HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewData["Title"] = "Login";
+                return View();
+            }
+                
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -67,16 +78,25 @@ namespace ProjectManager.Controllers
             return View(model);
         }
 
+        [Authorize]
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet]
         public IActionResult Register()
         {
-            ViewData["Title"] = "Register";
-            return View();
+            if (HttpContext.User.Identity != null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewData["Title"] = "Register";
+                return View();
+            }
         }
 
         //Register User action

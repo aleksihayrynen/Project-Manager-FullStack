@@ -7,9 +7,11 @@ using ProjectManager.Models.ViewModels;
 using ProjectManager.Models.Services;
 using ProjectManager.Models;
 using ProjectManager.Models.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectManager.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
         private readonly GetProjectsService _getProjectsService;
@@ -50,7 +52,7 @@ namespace ProjectManager.Controllers
             return PartialView("_inviteModal", model);
         }
 
-
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> AddTask(AddTaskViewModel model, ObjectId project_id)
         {
 
@@ -74,6 +76,8 @@ namespace ProjectManager.Controllers
                     if (string.IsNullOrEmpty(userId))
                         throw new Exception("User not authenticated.");
 
+                    var actualDate = model.DueDate + (DateTime.Now - DateTime.UtcNow); //Fixes time zone erros with DB and application
+
                     var newTask = new TaskItem
                     {
                         ProjectId = project_id,
@@ -83,7 +87,7 @@ namespace ProjectManager.Controllers
                         CreatedBy = new ObjectId(userId),
                         Completed = false,
                         CretedDate = DateTime.Now,
-                        DueDate = model.DueDate,
+                        DueDate = actualDate,
                         State = TaskItem.TaskState.InProgress
                     };
                     await MongoManipulator.Save(newTask);
@@ -97,6 +101,7 @@ namespace ProjectManager.Controllers
             }
         }
 
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> AddProject(AddProjectViewModel model)
         {
             if (!ModelState.IsValid || string.IsNullOrEmpty(model.ProjectName))
@@ -151,7 +156,7 @@ namespace ProjectManager.Controllers
             }
         }
 
-
+        [Authorize]
         public async  Task<IActionResult> Index()
         {
             
