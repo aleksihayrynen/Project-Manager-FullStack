@@ -24,6 +24,8 @@ namespace ProjectManager.Models.ViewModels
         [Required]
         public DateTime DueDate { get; set; }
 
+        public List<ProjectMembers> UserInfo { get; set; }
+
 
     }
 }

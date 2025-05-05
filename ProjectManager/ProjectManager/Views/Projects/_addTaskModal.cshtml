@@ -5,7 +5,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addItemModalLabel">Add Item</h5>
+                <h5 class="modal-title" id="addItemModalLabel">Add Task</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -24,8 +24,14 @@
 
                     <div class="form-group">
                         <label for="AssignedTo" class="control-label">Choose people:</label>
-                        <input asp-for="AssignedTo" class="form-control" />
-                        <span asp-validation-for="AssignedTo" class="text-danger"></span>
+                        <select asp-for="AssignedTo" class="form-control">
+                            @foreach (var member in Model.UserInfo)
+                            {
+                                <option value="@member.UserId"> @member.FirstName </option>
+                            }
+                        </select>
+                        <input asp-for="UserInfo" type="hidden" value="@Model.UserInfo" />
+
                     </div>
 
                     <div class="form-group">
@@ -35,7 +41,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn btn-deny" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>

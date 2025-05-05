@@ -2,10 +2,12 @@
 @using ProjectManager.Models.ViewModels
 @using ProjectManager.Models.Services
 @using ProjectManager.Models
+@using ProjectManager.Models.Utils
 @using MongoDB.Bson
 
 <div class="invite-modal">
-    <input type="text"
+    <h3 id="inviteModal_title">Invite Users</h3>
+    <input id="invite_searchbar" type="text"
     class="form-control"
     placeholder="Search by name or email..."
     @bind="searchText"
@@ -16,8 +18,13 @@
         <ul class="list-group">
             @foreach (var user in searchResults)
             {
-                <li class="list-group-item" @onclick="() => AddUser(user)">
-                    @user.Username (@user.Email)
+                <li class="list-group-item found-people" @onclick="() => AddUser(user)">
+                    <div class="profilepicture_container_search">
+                        <img class="profile_picture" src="/Media/flover.png" />
+                    </div>
+                    <p>
+                        @UtilityFunctions.CapitalizeFirstLetter(user.Username) (@UtilityFunctions.CapitalizeFirstLetter(user.FirstName) @UtilityFunctions.CapitalizeFirstLetter(user.LastName))
+                    </p>
                 </li>
             }
         </ul>

@@ -10,6 +10,7 @@ namespace ProjectManager.Models
 
         [Required]
         public string Title { get; set; }
+        public string? Description { get; set; }
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

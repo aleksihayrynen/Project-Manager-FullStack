@@ -44,6 +44,7 @@ html {
 body {
     background-color: var(--darker_bg);
     color: var(--colourpalette-white);
+
 }
 
 
@@ -79,8 +80,12 @@ header{
     height: 80px;
 }
 
-.side_nav ul li.active a{
-    color: var(--colourpalette-pink)
+.side_nav li.active span{
+    color:var(--colourpalette-pink);
+}
+
+.side_nav li.active svg {
+    fill: var(--colourpalette-pink);
 }
 
 .side_nav a{
@@ -91,10 +96,11 @@ header{
     align-items:center;
     gap: 1em;
     height:100%;
+    color: var(--colourpalette-white);
 }
-.side_nav img{
-    flex-shrink:0 ;
-    fill:var(--colourpalette-pink);
+
+.side_nav img,svg {
+    flex-shrink: 0;
     margin-left: 9px;
 }
 
@@ -104,8 +110,7 @@ header{
 }
 
 .side_nav a:hover{
-    background-color: var(--colourpalette-pink);
-    cursor:pointer;
+    background-color:darkslategray;
 }
 
 .side_nav.close {
@@ -199,6 +204,23 @@ nav {
     overflow: clip;
     background-color: #d5d4d4;
 }
+
+.profilepicture_container_search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    min-width:30px;
+    min-height:30px;
+    border-radius: 50%;
+    border: 1px solid black;
+    overflow: clip;
+    background-color: #d5d4d4;
+    min
+}
+
+
 
 .profilepicture_container:hover {
     cursor: pointer;
@@ -362,6 +384,11 @@ footer {
     background-color: #0056b3;
 }
 
+.btn-group {
+    gap: 15px;
+    margin-left: 10px;
+}
+
 /* Image side with a cut effect */
 .image-side {
     position: relative;
@@ -424,15 +451,19 @@ footer {
 
 
 .invite-modal{
-    padding-top:30px;
-    min-height: 300px
+    background-color:var(--colourpalette-nav_bg);
+    height:85%;
+}
+
+#inviteModal_title{
+    margin-bottom:1em;
 }
 #InviteModal_overlay {
     height: 100vh;
     width: 100vw;
-    background-color:rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
-    position:absolute
+    position: absolute
 }
 .searchUsersModal {
     display: none;
@@ -447,23 +478,49 @@ footer {
     z-index: 1;
 }
 
-
 .Invitemodal-content {
     position: relative;
     z-index: 2;
     margin: 100px auto;
-    padding: 1rem;
-    width: 400px;
+    padding: 10px 20px;
+    width: 500px;
+    height:500px;
+    max-height:50%;
     max-width: 90%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    top: 7vh ;
-    overflow: auto;
+    top: 7vw;
+    background-color: var(--colourpalette-nav_bg);
+    color: var(--colourpalette-white);
+}
+
+.invite-modal li {
+    background-color: var(--darker_bg);
+    color: var(--colourpalette-white);
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow: clip;
+    text-wrap: nowrap;
+}
+.invite-modal li p {
+    margin-bottom:0px;
+}
+
+.invite-modal ul {
+
+    overflow-y: auto;
+    max-height:60%;
+}
+
+#invite_searchbar{
+   border-bottom:solid 1px var(--colourpalette-pink);
 }
 
 .close_InviteModal_button {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 10px;
+    right: 20px;
     background: transparent;
     border: none;
     font-size: 1.2rem;
@@ -473,9 +530,9 @@ footer {
 
 #send_invite_button
 {
-    bottom: 10px;
+    bottom: 30px;
     position:absolute;
-    left: 30px;
+    left: 37%;
 }
 #InvitePeople{
     margin-left: 15px;
@@ -597,20 +654,24 @@ footer {
 
 
 
-
 .toggle-btn {
     cursor: pointer;
     padding: 10px 20px;
 }
 
-.toggle-btn:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+
+.btn-allow:hover,
+.btn-allow.active {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    color: white;
 }
 
-.toggle-btn.active {
-    background-color: #007bff;
-    border-color: #007bff;
+
+.btn-deny:hover,
+.btn-deny.active {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
     color: white;
 }
 
@@ -640,8 +701,7 @@ footer {
     width:100%;
 }
 
-#showModalButton {
-}
+
 
 
 .project_container {
@@ -708,8 +768,10 @@ footer {
     margin-top:15px;
 }
 
-.project_subtitle{
+.project_subtitle {
     color: var(--colourpalette-Lightgreen);
+    overflow: clip;
+    height: 40px;
 }
 
 .project_div p {

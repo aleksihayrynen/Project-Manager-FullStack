@@ -7,7 +7,6 @@ using ProjectManager.Models.ViewModels;
 using ProjectManager.Models.Services;
 using ProjectManager.Models;
 using ProjectManager.Models.Utils;
-using static ProjectManager.Models.TaskItem;
 
 namespace ProjectManager.Controllers
 {
@@ -23,14 +22,18 @@ namespace ProjectManager.Controllers
         }
 
 
-        public IActionResult addTaskModal()
+        public IActionResult addTaskModal(ObjectId project_id)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var project = _getProjectsService.GetProjectById(project_id);
+            var members = project.Result.Members;
+            
             return PartialView("_addTaskModal",
                 new AddTaskViewModel
                 {
                     DueDate = DateTime.Now,
-                    AssignedTo = userId
+                    AssignedTo = userId,
+                    UserInfo = members
 
                 });
         }
@@ -56,6 +59,10 @@ namespace ProjectManager.Controllers
             {
                 if (string.IsNullOrEmpty(model.TaskName))
                     ModelState.AddModelError(nameof(model.TaskName), "Title cannot be empty");
+
+                // If a validation error happens need to refetch the userInfo, couldnt pass it from the Razor View directly
+                var project = await _getProjectsService.GetProjectById(project_id);
+                model.UserInfo = project.Members;
 
                 return PartialView("_addTaskModal", model);
             }
@@ -105,7 +112,8 @@ namespace ProjectManager.Controllers
                 try
                 {
                     var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    var username = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                    var user = MongoManipulator.GetObjectById<User>(userId);
+
 
                     if (string.IsNullOrEmpty(userId))
                         throw new Exception("User not authenticated.");
@@ -113,6 +121,7 @@ namespace ProjectManager.Controllers
                     var newProject = new Project
                         {
                             Title = model.ProjectName,
+                            Description = model.Description ?? "No description ;(",
                             CreatedAt = DateTime.Now,
                             OpenCreate = model.OpenCreate, 
                             OpenInvite =  model.OpenInvite, 
@@ -121,9 +130,13 @@ namespace ProjectManager.Controllers
                             {
                                 new ProjectMembers
                                 {
-                                    Username = username,
+                                    Username = user.Result.Username,
+                                    FirstName = user.Result.FirstName,
+                                    LastName = user.Result.LastName,
                                     UserId = new ObjectId(userId),
                                     Role = "Owner"
+                                    
+                                    
                                 }
                             }
                         };

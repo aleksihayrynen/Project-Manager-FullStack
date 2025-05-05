@@ -27,20 +27,17 @@
             <div class="project_div">
                 <div class="project_link_container">
                     <h2>@UtilityFunctions.CapitalizeFirstLetter(project.Project.Title)</h2>
-                    <p class="project_subtitle">Project idea/Task</p>
+                    <p class="project_subtitle">@((project.Project.Description) ?? "No Description") </p>
                     <div class="Members_owner">
                         <div class="Members">
                             <p>Members: @project.Project.Members.Count</p>
                             <div class="picture_rower">
-                                <div class="profilepicture_container">
-                                    <img class="profile_picture" src="/Media/flover.png" />
-                                </div>
-                                <div class="profilepicture_container">
-                                    <img class="profile_picture" src="/Media/flover.png" />
-                                </div>
-                                <div class="profilepicture_container">
-                                    <img class="profile_picture" src="/Media/flover.png" />
-                                </div>
+                                @for (var i = 0; i < Math.Min(project.Project.Members.Count, 3); i++)
+                                {
+                                    <div class="profilepicture_container">
+                                        <img class="profile_picture" src="/Media/flover.png" />
+                                    </div>
+                                }
                                 @if (project.Project.Members.Count - 3 > 0)
                                 {
                                     <p id="member_extra">+ @(project.Project.Members.Count - 3)</p>

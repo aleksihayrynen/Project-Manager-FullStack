@@ -104,7 +104,6 @@ namespace ProjectManager.Controllers
                 }
                 else
                 {
-                    
                     var generatedSalt = new byte[16];  // create empty bytes for the salt
                     RandomNumberGenerator.Fill(generatedSalt);  // Fill the salt with secure random generator
 
@@ -116,7 +115,7 @@ namespace ProjectManager.Controllers
                         Password = Argon2Helper.HashPassword(model.Password.Trim(), generatedSalt),
                         Email = model.Email.Trim().ToLower(),
                         IsActive = true,
-                        Salt = generatedSalt 
+                        Salt = generatedSalt
 
                     };
 

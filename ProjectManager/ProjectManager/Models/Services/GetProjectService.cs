@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectManager.Models.ViewModels;
+using static MongoDB.Bson.Serialization.Serializers.SerializerHelper;
 using static ProjectManager.Models.TaskItem;
 
 namespace ProjectManager.Models.Services
@@ -16,6 +17,8 @@ namespace ProjectManager.Models.Services
             );
              return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
+
+
 
         public async Task<List<TaskItem>> GetTasksByProjectIds(List<ObjectId> projectIds)
         {
@@ -121,7 +124,10 @@ namespace ProjectManager.Models.Services
                 {
                     UserId = user._id,
                     Username = user.Username ?? "",
+                    FirstName = user.FirstName ?? "",
+                    LastName = user.LastName ?? "",
                     Role = "Member"
+
                 });
             }
 

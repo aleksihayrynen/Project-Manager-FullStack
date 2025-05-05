@@ -87,6 +87,15 @@ namespace ProjectManager.Models.Services
             return await GetObjectById<T>(entity._id);
         }
 
+        public static async Task<T> GetObjectById<T>(string id) where T : DB_SaveableObject
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                throw new ArgumentException("Invalid ObjectId string", nameof(id));
+
+            return await GetObjectById<T>(objectId);
+        }
+
+
         public static async Task<T> GetObjectByField<T>(string fieldName, string value) where T : DB_SaveableObject
         {
             string collectionName = typeof(T).Name;

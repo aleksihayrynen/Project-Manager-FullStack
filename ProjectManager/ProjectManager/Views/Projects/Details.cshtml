@@ -78,7 +78,7 @@
 
         $(document).ready(function () {
             function loadModal() {
-                $.get('@Url.Action("addTaskModal", "Projects")', function (response) {
+                $.get('@Url.Action("AddTaskModal", "Projects", new { project_id = Model.Project._id})', function (response) {
                     $('#modalContainer').html(response);
                     $('#addTaskModal').modal('show');
                 });
@@ -91,6 +91,9 @@
             // Delegate the form submission to dynamically loaded content
             $('#modalContainer').on('submit', '#addTaskform', function (e) {
                 e.preventDefault();
+                
+                const $submitBtn = $(this).find('button[type="submit"]');
+                $submitBtn.prop('disabled', true).text('Submitting...');
 
                 $.ajax({
                     url: '@Url.Action("AddTask", "Projects", new { project_id = @Model.Project._id })',
@@ -110,9 +113,13 @@
                         $('#modalContainer').html(response);
                         $('#addTaskModal').modal('show');
                     }
+                },
+                complete: function () {
+                // Re-enable button if needed (in case of validation errors)
+                $submitBtn.prop('disabled', false).text('Save');
                 }
-                });
             });
+        });
 
         const modalContainer = document.getElementById("searchUsersModal");
 
