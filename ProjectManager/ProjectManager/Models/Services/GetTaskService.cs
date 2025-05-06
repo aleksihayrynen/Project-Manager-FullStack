@@ -25,6 +25,11 @@ namespace ProjectManager.Models.Services
             await MongoManipulator.Save(task);
         }
 
+        public async Task DeleteTask(TaskItem task)
+        {
+            await MongoManipulator.DeleteHelper(task);
+        }
+
 
         public async Task<ProjectDetailsViewModel> GetProjectWithTasks(ObjectId project_id)
         {
