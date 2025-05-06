@@ -217,7 +217,6 @@ nav {
     border: 1px solid black;
     overflow: clip;
     background-color: #d5d4d4;
-    min
 }
 
 
@@ -384,6 +383,10 @@ footer {
     background-color: #b02a37;
 }
 
+.btn-close:hover {
+    background-color: #565e64;
+}
+
 
 .btn-login {
     background-color: #007bff;
@@ -543,9 +546,11 @@ footer {
     position:absolute;
     left: 37%;
 }
-#InvitePeople{
-    margin-left: 15px;
+#InvitePeople , #showModalButton{
+    margin:0 0 5px 15px;
+    
 }
+
 
 .project_info_boxes{
     display:flex;
@@ -816,13 +821,15 @@ footer {
 
 .tasktable_heading th{
     padding:1em;
-
+    padding-bottom:5em;
 }
 
 .tasktable td {
     padding: 10px 0;
     padding-left:1em;
     border-bottom: solid 1px var(--colourpalette-white);
+    max-width:250px;
+    overflow:clip;
 }
 
 .tasktable_heading th, td {
@@ -833,6 +840,21 @@ footer {
     width: 70px;
     padding:0;
 }
+
+.Assigned_flex {
+    display: flex;
+    align-items: center;
+}
+.Assigned_flex p{
+    margin:0 10px;
+}
+
+
+
+
+
+
+
 
 
 

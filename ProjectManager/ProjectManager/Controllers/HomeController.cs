@@ -13,9 +13,14 @@ namespace ProjectManager.Controllers
             _logger = logger;
         }
 
+        public IActionResult ProfileTest()
+        {
+            return View(ViewData);
+
+        }
         public IActionResult Index()
         {
-            return View(ViewData["Title"] = "No");
+            return View(ViewData);
 
         }
 

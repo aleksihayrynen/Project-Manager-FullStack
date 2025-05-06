@@ -56,9 +56,13 @@
                             }
                             else
                             {
-                                <div class="profilepicture_container_tasklist">
-                                    <img class="profile_picture" src="/Media/flover.png" />
+                                <div class="Assigned_flex">
+                                    <div class="profilepicture_container_tasklist">
+                                        <img class="profile_picture" src="/Media/flover.png" />
+                                    </div>
+                                    <p>@projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo).Username </p>
                                 </div>
+                                
                             }
 
                         </td>
@@ -75,12 +79,16 @@
                             }
                         </td>
 
-                        <!-- Placeholder profile again (maybe another person?) -->
+                        <!-- Created by not editable -->
                         <td>
-                            <div class="profilepicture_container_tasklist">
-                                <img class="profile_picture" src="/Media/flover.png" />
+                            <div class="Assigned_flex">
+                                <div class="profilepicture_container_tasklist">
+                                    <img class="profile_picture" src="/Media/flover.png" />
+                                </div>
+                                <p>@projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy).Username </p>
                             </div>
                         </td>
+                       
 
                         <!-- Created Date (not editable) -->
                         <td>@item.CretedDate.ToLocalTime().ToString("d", System.Globalization.CultureInfo.CurrentCulture)</td>
@@ -121,21 +129,24 @@
                             @if (IsEditing(item._id.ToString()))
                             {
                                 <td>
-                                    <button class="btn btn-sm btn-primary me-2" @onclick="() => SaveTask(item)">Save</button>
-                                    <button class="btn btn-sm btn-danger" @onclick="CancelEdit">Cancel</button>
+                                    
                                 </td>
-                                <td></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-2" @onclick="() => SaveTask(item)">Save</button>
+                                <button class="btn btn-sm btn-danger" @onclick="CancelEdit">Cancel</button>
+                            </td>
                             }
 
                             else if (projectInfo.OpenCreate)
                             {
-                                @if (!showDeleteConfirmation)
+                            @if (taskToDelete != item)
                                 {
                                     <td>
                                         <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
-                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
+                                        
                                     </td>
                                     <td>
+                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
                                         <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
                                     </td>
                                 }
@@ -144,7 +155,7 @@
                                     <td></td>
                                     <td>
                                         <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
-                                        <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
                                     </td>
 
                                 }
@@ -166,13 +177,13 @@
 
                             else if (projectInfo.OpenCreate == false && userInfo.Role == "Owner")
                             {
-                                @if (!showDeleteConfirmation)
+                            @if (taskToDelete != item)
                                 {
                                     <td>
                                         <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
-                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
                                     </td>
                                     <td>
+                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
                                         <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
                                     </td>
                                 }
@@ -208,9 +219,8 @@
     private ProjectMembers userInfo;
     private string? editTaskId = null;
     private TaskItem editedBackUp = null;
-    private string selectedUserId; // for the bind for the Assigned to select
+    //private string selectedUserId; // for the bind for the Assigned to select
 
-    private bool showDeleteConfirmation = false;
     private TaskItem taskToDelete = null;
 
 
@@ -248,9 +258,9 @@
 
     async Task SaveTask(TaskItem task)
     {
-    await _getTaskService.UpdateTask(task);
-    editTaskId = null;
-    editedBackUp = null;
+        await _getTaskService.UpdateTask(task);
+        editTaskId = null;
+        editedBackUp = null;
     }
 
     public async Task MarkTaskAsDone(TaskItem task)
@@ -303,12 +313,11 @@
     private void ShowDeleteConfirmation(TaskItem task)
     {
         taskToDelete = task;
-        showDeleteConfirmation = true;
     }
 
     private void CancelDelete()
     {
-        showDeleteConfirmation = false;
+        taskToDelete = null;
     }
 
     private async Task ConfirmDelete()
@@ -318,7 +327,6 @@
             await _getTaskService.DeleteTask(taskToDelete);
             taskitems?.Remove(taskToDelete);
             taskToDelete = null;
-            showDeleteConfirmation = false;
         }
     }
         

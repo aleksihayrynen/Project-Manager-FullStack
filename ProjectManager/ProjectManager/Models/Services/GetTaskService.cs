@@ -31,7 +31,7 @@ namespace ProjectManager.Models.Services
         }
 
 
-        public async Task<ProjectDetailsViewModel> GetProjectWithTasks(ObjectId project_id)
+        public async Task<ProjectDetailsViewModel> GetProjectWithTasks(ObjectId project_id, ObjectId user_id)
         {
             var project = await MongoManipulator.GetObjectById<Project>(project_id);
             var allTasks = await GetTasksByProjectId(project_id);
@@ -43,7 +43,8 @@ namespace ProjectManager.Models.Services
                 Project = project,
                 CompletedTask = allTasks.Where(t => t.State == TaskState.Completed).ToList(),
                 LateTask = allTasks.Where(t => t.State == TaskState.InProgress && t.DueDate.ToLocalTime() < DateTime.Today).ToList(),
-                AssignedTask = allTasks.Where(t => t.State == TaskState.InProgress).ToList()
+                AssignedTask = allTasks.Where(t => t.State == TaskState.InProgress).ToList(),
+                CurrentUser = user_id
             };
         }
     }

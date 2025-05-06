@@ -12,9 +12,24 @@
             <button type="button" class="btn btn-success" id="showModalButton">
                 Add Item
             </button>
-            <button type="button" class="btn btn-success" id="InvitePeople">
-                + Invite
-            </button>
+
+            @if (Model.Project.OpenInvite)
+            {
+                <button type="button" class="btn btn-success" id="InvitePeople">
+                    Invite
+                </button>
+            }
+            else if (!Model.Project.OpenInvite && Model.Project.Members.FirstOrDefault(e => e.UserId == Model.CurrentUser)?.Role == "Member")
+            {
+                <p>You cannot add people to this project</p>
+            }
+            else if (!Model.Project.OpenInvite && Model.Project.Members.FirstOrDefault(e => e.UserId == Model.CurrentUser)?.Role == "Owner")
+            {
+                <button type="button" class="btn btn-success" id="InvitePeople">
+                    Invite
+                </button>
+            }
+
         </div>
         
     </div>

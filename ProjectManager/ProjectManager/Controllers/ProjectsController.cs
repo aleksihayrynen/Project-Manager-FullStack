@@ -191,9 +191,10 @@ namespace ProjectManager.Controllers
         public async Task<IActionResult> Details(string id, string project_title)
         
         {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             ViewData["Title"] = $"Project - {UtilityFunctions.CapitalizeFirstLetter(project_title)}";
             var project_id = new ObjectId(id);
-            var result = await _getTasksService.GetProjectWithTasks(project_id);
+            var result = await _getTasksService.GetProjectWithTasks(project_id , new ObjectId(userId));
 ;
 
             return View(result);
