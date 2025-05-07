@@ -9,6 +9,29 @@ namespace ProjectManager.Models.Services
 {
     public class GetProjectsService
     {
+
+        public async Task<bool> UserValidationAsync(ObjectId userId, ObjectId project_id)
+        {
+            var project = await MongoManipulator.GetObjectById<Project>(project_id) ?? throw new KeyNotFoundException("Project not found."); ;
+
+            return CheckValidation(userId, project.Members); ;
+        }
+
+        private bool CheckValidation(ObjectId userId, List<ProjectMembers>membersList)
+        {
+            if (membersList.Any(m => m.UserId == userId))
+            {
+                return true;
+            }
+                
+            else
+            {
+                return false;
+            }
+        }
+
+
+
         public async Task<List<Project>> GetProjectsByUserId(ObjectId userId)
         {
             var filter = Builders<Project>.Filter.ElemMatch(
@@ -24,6 +47,7 @@ namespace ProjectManager.Models.Services
             var filter = Builders<TaskItem>.Filter.In(t => t.ProjectId, projectIds);
             return await MongoManipulator.GetAllObjectsByFilter(filter); 
         }
+
 
 
         public async Task<Project> GetProjectById(ObjectId id)

@@ -9,7 +9,7 @@ namespace ProjectManager.Models
         [BsonElement("title")]
 
         [Required]
-        public string Title { get; set; }
+        public required string Title { get; set; }
         public string? Description { get; set; }
 
         [BsonElement("createdAt")]

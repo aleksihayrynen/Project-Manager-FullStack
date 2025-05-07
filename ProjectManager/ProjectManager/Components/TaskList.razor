@@ -8,6 +8,12 @@
 
 
 <h3>TaskList</h3>
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger blazor_error_message">
+        <h3>@errorMessage</h3>
+    </div>
+}
 <div class="table-scroll-container">
     <table class="tasktable">
         <thead>
@@ -62,7 +68,7 @@
                                     </div>
                                     <p>@projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo).Username </p>
                                 </div>
-                                
+
                             }
 
                         </td>
@@ -88,7 +94,7 @@
                                 <p>@projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy).Username </p>
                             </div>
                         </td>
-                       
+
 
                         <!-- Created Date (not editable) -->
                         <td>@item.CretedDate.ToLocalTime().ToString("d", System.Globalization.CultureInfo.CurrentCulture)</td>
@@ -125,79 +131,79 @@
                             }
                         </td>
 
-                       <!-- Role logic for buttons not pretty ;D -->
-                            @if (IsEditing(item._id.ToString()))
-                            {
-                                <td>
-                                    
-                                </td>
+                        <!-- Role logic for buttons not pretty ;D -->
+                        @if (IsEditing(item._id.ToString()))
+                        {
+                            <td>
+
+                            </td>
                             <td>
                                 <button class="btn btn-sm btn-primary me-2" @onclick="() => SaveTask(item)">Save</button>
                                 <button class="btn btn-sm btn-danger" @onclick="CancelEdit">Cancel</button>
                             </td>
-                            }
+                        }
 
-                            else if (projectInfo.OpenCreate)
-                            {
+                        else if (projectInfo.OpenCreate)
+                        {
                             @if (taskToDelete != item)
-                                {
-                                    <td>
-                                        <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
-                                        
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
-                                        <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                    <td>
-                                        <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
-                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-                                    </td>
-
-                                }
-                            }
-
-                            else if (projectInfo.OpenCreate == false && userInfo.Role == "Member" && (item.State == TaskItem.TaskState.InReview || item.State == TaskItem.TaskState.Completed))
                             {
                                 <td>
-                                    <p>In Review</p>
+                                    <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
+
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
+                                    <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
                                 </td>
                             }
+                            else
+                            {
+                                <td></td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
+                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                                </td>
 
-                            else if (projectInfo.OpenCreate == false && userInfo.Role == "Member")
+                            }
+                        }
+
+                        else if (projectInfo.OpenCreate == false && userInfo.Role == "Member" && (item.State == TaskItem.TaskState.InReview || item.State == TaskItem.TaskState.Completed))
+                        {
+                            <td>
+                                <p>In Review</p>
+                            </td>
+                        }
+
+                        else if (projectInfo.OpenCreate == false && userInfo.Role == "Member")
+                        {
+                            <td>
+                                <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
+                            </td>
+                        }
+
+                        else if (projectInfo.OpenCreate == false && userInfo.Role == "Owner")
+                        {
+                            @if (taskToDelete != item)
                             {
                                 <td>
                                     <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
                                 </td>
+                                <td>
+                                    <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
+                                    <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
+                                </td>
                             }
-
-                            else if (projectInfo.OpenCreate == false && userInfo.Role == "Owner")
+                            else
                             {
-                            @if (taskToDelete != item)
-                                {
-                                    <td>
-                                        <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
-                                        <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
-                                        <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-                                    </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
+                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                                </td>
 
-                                }
                             }
+                        }
                     </tr>
                 }
             }
@@ -219,6 +225,7 @@
     private ProjectMembers userInfo;
     private string? editTaskId = null;
     private TaskItem editedBackUp = null;
+    private string? errorMessage;
 
 
     private TaskItem taskToDelete = null;
@@ -258,9 +265,17 @@
 
     async Task SaveTask(TaskItem task)
     {
-        await _getTaskService.UpdateTask(task);
-        editTaskId = null;
-        editedBackUp = null;
+        if (!projectInfo.OpenCreate && userInfo.Role == "Member") // Backend logic to stop normal users from using Save if they manage to use it somehow
+        {
+            editTaskId = null;
+            editedBackUp = null;   
+        }
+        else
+        {
+            await _getTaskService.UpdateTask(task);
+            editTaskId = null;
+            editedBackUp = null;
+        }
     }
 
     public async Task MarkTaskAsDone(TaskItem task)
@@ -272,24 +287,32 @@
     }
     else
     {
-        task.State = TaskItem.TaskState.Completed;  // WHen a other role than user presses button the state should go to completed
+        task.State = TaskItem.TaskState.Completed;  // WHen a other role than Member presses button the state should go to completed
         await SaveTask(task);
     }
     }
 
     void BeginEdit(TaskItem item)
     {
-    editedBackUp = new TaskItem
-            {
-                _id = item._id,
-                Title = item.Title,
-                AssignedTo = item.AssignedTo,
-                DueDate = item.DueDate,
-                State = item.State
-            };
-
-    editTaskId = item._id.ToString();
+    if (!projectInfo.OpenCreate && userInfo.Role == "Member") // Backend logic to stop normal users from using Edit if they manage to use it somehow
+    {
+         // Maybe add error notice here
     }
+    else
+    {
+        editedBackUp = new TaskItem
+                {
+                    _id = item._id,
+                    Title = item.Title,
+                    AssignedTo = item.AssignedTo,
+                    DueDate = item.DueDate,
+                    State = item.State
+                };
+
+        editTaskId = item._id.ToString();
+    }
+    }
+    
 
     void CancelEdit()
     {
@@ -312,23 +335,31 @@
 
     private void ShowDeleteConfirmation(TaskItem task)
     {
-        taskToDelete = task;
+    taskToDelete = task;
     }
 
     private void CancelDelete()
     {
-        taskToDelete = null;
+    taskToDelete = null;
     }
 
     private async Task ConfirmDelete()
     {
-        if (taskToDelete != null)
+        if (!projectInfo.OpenCreate && userInfo.Role == "Member") // Backend logic to stop normal users from using delete if they manage to use it somehow
         {
-            await _getTaskService.DeleteTask(taskToDelete);
-            taskitems?.Remove(taskToDelete);
-            taskToDelete = null;
+            taskToDelete = null;  // Maybe add error notice here
+        }
+        else
+        {
+            if (taskToDelete != null)
+            {
+                await _getTaskService.DeleteTask(taskToDelete);
+                taskitems?.Remove(taskToDelete);
+                taskToDelete = null;
+            }
         }
     }
+    
         
 
 #region SvgMadness

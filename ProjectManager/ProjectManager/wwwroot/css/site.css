@@ -514,7 +514,7 @@ footer {
     align-items: center;
     gap: 20px;
     overflow: clip;
-    text-wrap: nowrap;
+
 }
 .invite-modal li p {
     margin-bottom:0px;
@@ -883,7 +883,7 @@ padding: 0 5px 0 2px;
 .Members_list td,th {
     color:white;
     text-align:center;
-    align-content:center
+    vertical-align:middle;
       
 }
 

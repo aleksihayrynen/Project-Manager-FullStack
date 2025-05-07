@@ -24,85 +24,124 @@ namespace ProjectManager.Controllers
             _getTasksService = getTasksService;
         }
 
-
-        public IActionResult addTaskModal(ObjectId project_id)
+        [Authorize]
+        public async Task<IActionResult> addTaskModal(ObjectId project_id)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var project = _getProjectsService.GetProjectById(project_id);
-            var members = project.Result.Members;
-            
-            return PartialView("_addTaskModal",
-                new AddTaskViewModel
-                {
-                    DueDate = DateTime.Now,
-                    AssignedTo = userId,
-                    UserInfo = members
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
 
-                });
+            var isMember = await _getProjectsService.UserValidationAsync(new ObjectId(userId), (project_id));
+
+            if (!isMember)
+            {
+                return Forbid();
+            }
+            else
+            {
+                var project = _getProjectsService.GetProjectById(project_id);
+                var members = project.Result.Members;
+
+                return PartialView("_addTaskModal",
+                    new AddTaskViewModel
+                    {
+                        DueDate = DateTime.Now,
+                        AssignedTo = userId,
+                        UserInfo = members
+
+                    });
+            }
+
         }
 
+        [Authorize]
         public IActionResult addProjectModal()
         {
             return PartialView("_addProjectModal", new AddProjectViewModel { });
         }
 
         [HttpGet]
-        public IActionResult InviteModal(string projectId)
+        public async Task<IActionResult>InviteModal(string projectId)
         {
-            var model = new InviteViewModel { ProjectId = projectId };
-            return PartialView("_inviteModal", model);
-        }
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
 
-        [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddTask(AddTaskViewModel model, ObjectId project_id)
-        {
+            var isMember = await _getProjectsService.UserValidationAsync(new ObjectId(userId), new ObjectId(projectId));
 
-            // Add some serious null checking and role checking here
-            if (!ModelState.IsValid || string.IsNullOrEmpty(model.TaskName))
+            if (!isMember)
             {
-                if (string.IsNullOrEmpty(model.TaskName))
-                    ModelState.AddModelError(nameof(model.TaskName), "Title cannot be empty");
-
-                // If a validation error happens need to refetch the userInfo, couldnt pass it from the Razor View directly
-                var project = await _getProjectsService.GetProjectById(project_id);
-                model.UserInfo = project.Members;
-
-                return PartialView("_addTaskModal", model);
+                return Forbid();
             }
             else
             {
-                try
-                {
-                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    if (string.IsNullOrEmpty(userId))
-                        throw new Exception("User not authenticated.");
-
-                    var actualDate = model.DueDate + (DateTime.Now - DateTime.UtcNow); //Fixes time zone erros with DB and application
-
-                    var newTask = new TaskItem
-                    {
-                        ProjectId = project_id,
-                        Title = model.TaskName,
-                        Description = model.Description,
-                        AssignedTo = new ObjectId(model.AssignedTo),
-                        CreatedBy = new ObjectId(userId),
-                        Completed = false,
-                        CretedDate = DateTime.Now,
-                        DueDate = actualDate,
-                        State = TaskItem.TaskState.InProgress
-                    };
-                    await MongoManipulator.Save(newTask);
-                    return Json(new { success = true });
-                }
-                catch (Exception ex)
-                {
-                    TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
-                    return PartialView("_AddItemPartial", model);
-                }
+                var model = new InviteViewModel { ProjectId = projectId };
+                return PartialView("_inviteModal", model);
             }
+            
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize]
+        public async Task<IActionResult> AddTask(AddTaskViewModel model, ObjectId project_id)
+        {
+
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var isMember = await _getProjectsService.UserValidationAsync(new ObjectId(userId), project_id);
+
+            if (!isMember)
+            {
+                return Forbid();
+            }
+            else
+            {
+                // Add some serious null checking and role checking here
+                if (!ModelState.IsValid || string.IsNullOrEmpty(model.TaskName))
+                {
+                    if (string.IsNullOrEmpty(model.TaskName))
+                        ModelState.AddModelError(nameof(model.TaskName), "Title cannot be empty");
+
+                    // If a validation error happens need to refetch the userInfo, couldnt pass it from the Razor View directly
+                    var project = await _getProjectsService.GetProjectById(project_id);
+                    model.UserInfo = project.Members;
+
+                    return PartialView("_addTaskModal", model);
+                }
+                else
+                {
+                    try
+                    {
+                        var actualDate = model.DueDate + (DateTime.Now - DateTime.UtcNow); //Fixes time zone erros with DB and application
+
+                        var newTask = new TaskItem
+                        {
+                            ProjectId = project_id,
+                            Title = model.TaskName,
+                            Description = model.Description,
+                            AssignedTo = new ObjectId(model.AssignedTo),
+                            CreatedBy = new ObjectId(userId),
+                            Completed = false,
+                            CretedDate = DateTime.Now,
+                            DueDate = actualDate,
+                            State = TaskItem.TaskState.InProgress
+                        };
+                        await MongoManipulator.Save(newTask);
+                        return Json(new { success = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                        return PartialView("_AddItemPartial", model);
+                    }
+                }
+            }
+
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize]
         public async Task<IActionResult> AddProject(AddProjectViewModel model)
         {
             if (!ModelState.IsValid || string.IsNullOrEmpty(model.ProjectName))
@@ -189,58 +228,88 @@ namespace ProjectManager.Controllers
 
         }
 
+
+        [Authorize]
         public async Task<IActionResult> Details(ObjectId project_id, string project_title)
         
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            ViewData["Title"] = $"Project - {UtilityFunctions.CapitalizeFirstLetter(project_title)}";
-            var result = await _getTasksService.GetProjectWithTasks(project_id , new ObjectId(userId));
-;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
 
-            return View(result);
+            var isMember = await _getProjectsService.UserValidationAsync(new ObjectId(userId), project_id);
+
+            if (!isMember)
+            {
+                return Forbid();
+            }
+            else
+            {
+
+                ViewData["Title"] = $"Project - {UtilityFunctions.CapitalizeFirstLetter(project_title)}";
+                var result = await _getTasksService.GetProjectWithTasks(project_id, new ObjectId(userId));
+
+                return View(result);
+            }
+
         }
 
-
+        [Authorize]
         public async Task<IActionResult> MyTasks(ObjectId project_id)
         {
-            try
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var isMember = await _getProjectsService.UserValidationAsync(new ObjectId(userId), project_id);
+
+            if (!isMember)
             {
-                if (HttpContext.User.Claims != null)
+                return Forbid();
+            }
+            else
+            {
+                try
                 {
-                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-                    if (string.IsNullOrEmpty(userId))
-                        throw new InvalidOperationException("User is null. Unable to proceed.");
-
                     var result = await _getProjectsService.GetProjectById(project_id);
                     return View(result);
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw new InvalidOperationException("User is null. Unable to proceed.");
+                    TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                    // Redirect to a generic error page
+                    return RedirectToAction("Error", "Home");
                 }
+            }
 
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
-                // Redirect to a generic error page
-                return RedirectToAction("Error", "Home");
-            }
         }
 
+        [Authorize]
         public async Task<IActionResult> Members(ObjectId project_id)
         {
-            try
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var isMember = await _getProjectsService.UserValidationAsync(new ObjectId(userId), project_id);
+
+            if (!isMember)
             {
-                var result = await _getProjectsService.GetProjectById(project_id);
-                return View(result);
+                return Forbid();
             }
-            catch (Exception ex)
+            else
             {
-                TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
-                // Redirect to a generic error page
-                return RedirectToAction("Error", "Home");
+                try
+                {
+                    var result = await _getProjectsService.GetProjectById(project_id);
+                    return View(result);
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                    // Redirect to a generic error page
+                    return RedirectToAction("Error", "Home");
+                }
             }
         }
 
