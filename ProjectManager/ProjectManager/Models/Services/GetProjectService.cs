@@ -19,7 +19,6 @@ namespace ProjectManager.Models.Services
         }
 
 
-
         public async Task<List<TaskItem>> GetTasksByProjectIds(List<ObjectId> projectIds)
         {
             var filter = Builders<TaskItem>.Filter.In(t => t.ProjectId, projectIds);
@@ -31,6 +30,7 @@ namespace ProjectManager.Models.Services
         {
             return await MongoManipulator.GetObjectById<Project>(id);
         }
+
 
         public async Task<List<User>> GetUsersById(List<string> userIds)
         {

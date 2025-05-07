@@ -8,6 +8,7 @@ using ProjectManager.Models.Services;
 using ProjectManager.Models;
 using ProjectManager.Models.Utils;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq.Expressions;
 
 namespace ProjectManager.Controllers
 {
@@ -188,16 +189,59 @@ namespace ProjectManager.Controllers
 
         }
 
-        public async Task<IActionResult> Details(string id, string project_title)
+        public async Task<IActionResult> Details(ObjectId project_id, string project_title)
         
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             ViewData["Title"] = $"Project - {UtilityFunctions.CapitalizeFirstLetter(project_title)}";
-            var project_id = new ObjectId(id);
             var result = await _getTasksService.GetProjectWithTasks(project_id , new ObjectId(userId));
 ;
 
             return View(result);
+        }
+
+
+        public async Task<IActionResult> MyTasks(ObjectId project_id)
+        {
+            try
+            {
+                if (HttpContext.User.Claims != null)
+                {
+                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    if (string.IsNullOrEmpty(userId))
+                        throw new InvalidOperationException("User is null. Unable to proceed.");
+
+                    var result = await _getProjectsService.GetProjectById(project_id);
+                    return View(result);
+                }
+                else
+                {
+                    throw new InvalidOperationException("User is null. Unable to proceed.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                // Redirect to a generic error page
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public async Task<IActionResult> Members(ObjectId project_id)
+        {
+            try
+            {
+                var result = await _getProjectsService.GetProjectById(project_id);
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                // Redirect to a generic error page
+                return RedirectToAction("Error", "Home");
+            }
         }
 
 

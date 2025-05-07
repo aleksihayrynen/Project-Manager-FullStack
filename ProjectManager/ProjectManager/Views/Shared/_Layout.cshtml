@@ -50,7 +50,6 @@
     </header>
     @{
         var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
-        Console.WriteLine("Controller:" + currentController);
     }
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {

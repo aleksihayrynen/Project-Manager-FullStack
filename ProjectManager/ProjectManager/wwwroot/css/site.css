@@ -44,6 +44,7 @@ html {
 body {
     background-color: var(--darker_bg);
     color: var(--colourpalette-white);
+    min-width:450px;
 
 }
 
@@ -99,7 +100,7 @@ header{
     color: var(--colourpalette-white);
 }
 
-.side_nav img,svg {
+.side_nav img, .side_nav svg {
     flex-shrink: 0;
     margin-left: 9px;
 }
@@ -704,7 +705,7 @@ footer {
 .AddItem_div {
     display: flex;
     max-width: 90%;
-    margin-bottom: 4vh;
+    margin-bottom: 15px;
     align-items: center;
     justify-content: space-between;
 }
@@ -805,10 +806,40 @@ footer {
     color: #ff4545;
 }
 
+.detail_tabs{
+display:flex;
+gap:30px;
+margin-bottom:50px;
+flex-wrap:wrap;
+
+}
+
+.detail_tabs a{
+    text-decoration:none;
+    color: var(--colourpalette-white);
+}
+
+.tab_nav{
+display: flex;
+gap: 10px;
+padding: 0 5px 0 2px;
+
+}
+
+.tab_nav.active {
+    display: flex;
+    gap: 10px;
+    color: var(--colourpalette-pink);
+    border-bottom: 1px solid var(--colourpalette-pink)
+}
+
+.tab_nav.active svg {
+    fill: var(--colourpalette-pink);
+}
 
 
-.tasktable{
-    width:100%;
+.tasktable {
+    width: 100%;
 }
 .table-scroll-container {
     overflow-x: auto;
@@ -849,7 +880,17 @@ footer {
     margin:0 10px;
 }
 
+.Members_list td,th {
+    color:white;
+    text-align:center;
+    align-content:center
+      
+}
 
+.Members_list{
+    width:80%;
+    margin:auto
+}
 
 
 

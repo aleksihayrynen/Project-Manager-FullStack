@@ -23,7 +23,7 @@
 <div class="project_container">
     @foreach (var project in Model)
     {
-        <a class="project_link" href="@Url.Action("Details", "Projects", new { id = project.Project._id, project_title = project.Project.Title })">
+        <a class="project_link" asp-action="Details" asp-controller="Projects" asp-route-project_id="@project.Project._id" asp-route-project_title="@project.Project.Title">
             <div class="project_div">
                 <div class="project_link_container">
                     <h2>@UtilityFunctions.CapitalizeFirstLetter(project.Project.Title)</h2>

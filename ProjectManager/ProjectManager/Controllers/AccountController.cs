@@ -41,7 +41,7 @@ namespace ProjectManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await MongoManipulator.GetObjectByField<User>("Username", model.Name.ToLower());
+                var user = await MongoManipulator.GetObjectByField<User>("Username", model.Name.ToLower().Trim());
                 if (user != null)
                 {
                     if (Argon2Helper.VerifyPassword(model.Password, user.Password, user.Salt))
@@ -61,7 +61,7 @@ namespace ProjectManager.Controllers
                         var authProperties = new AuthenticationProperties
                         {
                             AllowRefresh = true,  // Refresh cookie if about to expire
-                            IsPersistent = false // Cookies persist on browser reset
+                            IsPersistent = true // Cookies persist on browser reset
                         };
                         await HttpContext.SignInAsync(
                             CookieAuthenticationDefaults.AuthenticationScheme,
@@ -71,9 +71,10 @@ namespace ProjectManager.Controllers
                         Console.WriteLine("Login succes");
                         return RedirectToAction("Index", "Home");
                     }
-                    ModelState.AddModelError("password", "Username or password incorrect");
+                    ModelState.AddModelError("Password", "Username or password incorrect");
                     return View(model);
                 }
+                ModelState.AddModelError("Password", "Username or password incorrect");
             }
             return View(model);
         }

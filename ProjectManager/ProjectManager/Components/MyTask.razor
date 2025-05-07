@@ -7,7 +7,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
-<h3>TaskList</h3>
+<h3>My Tasks</h3>
 <div class="table-scroll-container">
     <table class="tasktable">
         <thead>
@@ -39,9 +39,9 @@
             </tr>
         </thead>
         <tbody>
-            @if (taskitems != null)
+            @if (myTaskItems != null)
             {
-                @foreach (var item in taskitems)
+                @foreach (var item in myTaskItems)
                 {
                     <tr>
                         <td>
@@ -60,7 +60,7 @@
                                     <div class="profilepicture_container_tasklist">
                                         <img class="profile_picture" src="/Media/flover.png" />
                                     </div>
-                                    <p>@projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo).Username </p>
+                                    <p>@projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo)?.Username </p>
                                 </div>
                                 
                             }
@@ -85,7 +85,7 @@
                                 <div class="profilepicture_container_tasklist">
                                     <img class="profile_picture" src="/Media/flover.png" />
                                 </div>
-                                <p>@projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy).Username </p>
+                                <p>@projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy)?.Username </p>
                             </div>
                         </td>
                        
@@ -213,13 +213,12 @@
 
 
 @code {
-    private List<TaskItem>? taskitems;
+    private List<TaskItem>? myTaskItems;
     private Project projectInfo;
     private string? userId;
     private ProjectMembers userInfo;
     private string? editTaskId = null;
     private TaskItem editedBackUp = null;
-
 
     private TaskItem taskToDelete = null;
 
@@ -233,15 +232,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-    await FetchUserId();
-    if (!string.IsNullOrEmpty(ProjectId) && ObjectId.TryParse(ProjectId, out var parsedId))
-    {
+        await FetchUserId();
+        if (!string.IsNullOrEmpty(ProjectId) && ObjectId.TryParse(ProjectId, out var parsedId))
+        {
 
-        projectInfo = await _getProjectsService.GetProjectById(parsedId);
-        userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == userId);
-        taskitems = await _getTaskService.GetTasksByProjectId(parsedId);
+            projectInfo = await _getProjectsService.GetProjectById(parsedId);
+            userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == userId);
+            myTaskItems = await _getTaskService.GetUsersTasksByProjectId(parsedId, new ObjectId(userId));
 
-    }
+        }
     }
 
 
@@ -296,7 +295,7 @@
     // Revert the task to the backup values when editing is cancelled
     if (editedBackUp != null)
     {
-        var taskToRevert = taskitems?.FirstOrDefault(task => task._id.ToString() == editTaskId);
+        var taskToRevert = myTaskItems?.FirstOrDefault(task => task._id.ToString() == editTaskId);
         if (taskToRevert != null)
         {
             // Restore the original task item data from editedBackUp
@@ -325,7 +324,7 @@
         if (taskToDelete != null)
         {
             await _getTaskService.DeleteTask(taskToDelete);
-            taskitems?.Remove(taskToDelete);
+            myTaskItems?.Remove(taskToDelete);
             taskToDelete = null;
         }
     }
