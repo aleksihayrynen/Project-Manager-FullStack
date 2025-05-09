@@ -19,15 +19,17 @@ namespace ProjectManager.Models.Services
         {
             var filter = Builders<TaskItem>.Filter.And(
             Builders<TaskItem>.Filter.Eq("ProjectId" , project_id),
-             Builders<TaskItem>.Filter.Eq("AssignedTo", userId)
+            Builders<TaskItem>.Filter.Eq("AssignedTo", userId)
             );
 
             return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
 
-        public async Task<TaskItem> GetProjectByUserId(ObjectId user_id)
+        public async Task <List<TaskItem>> GetTasksByUserId(ObjectId user_id)
         {
-            return await MongoManipulator.GetObjectById<TaskItem>(user_id);
+            var filter = Builders<TaskItem>.Filter.Eq("AssignedTo", user_id);
+
+            return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
 
         public async Task UpdateTask(TaskItem task)
