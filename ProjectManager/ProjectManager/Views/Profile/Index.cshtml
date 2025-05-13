@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<section class="account_information">
+    <div class="profile_header">
+        <div class="profilepicture_container_profile">
+            <img class="profile_picture" src="/Media/flover.png" />
+        </div>
+        <div class="profile_header_info">
+            <h4>Aleksi Häyrynen</h4>
+            <h4>ICT-Student</h4>
+            <h4>HAMK</h4>
+        </div>
+    </div>
+</section>
+    
+
+    <div class="field-group">
+        <label>Username:</label>
+        <p>Aleksi</p>
+
+        <label>Email:</label>
+        <p>AleksiemaiI@gmail.com</p>
+
+        <div id="occupationCompanyView" class="read-only">
+            <label>Occupation:</label>
+            <p id="occupationText">ICT-Student</p>
+
+            <label>Company:</label>
+            <p id="companyText">HAMK</p>
+        </div>
+
+        <form id="editForm" class="editable-form" onsubmit="saveForm(event)">
+            <label for="occupationInput">Occupation:</label>
+            <input type="text" id="occupationInput" value="ICT-Student" />
+
+            <label for="companyInput">Company:</label>
+            <input type="text" id="companyInput" value="HAMK" />
+
+            <button type="submit" class="edit-button" style="margin-top: 15px;">Save</button>
+        </form>
+    </div>
+
+    <div class="field-group">
+        <h3>Change password:</h3>
+        <label>Old password</label>
+        <input type="password" placeholder="Old password" />
+
+        <label>New password</label>
+        <input type="password" placeholder="New password" />
+
+        <label>Re-type new password</label>
+        <input type="password" placeholder="Re-type new password" />
+    </div>
+
+
+@section Scripts {
+    <script>
+
+    </script>
+
+}

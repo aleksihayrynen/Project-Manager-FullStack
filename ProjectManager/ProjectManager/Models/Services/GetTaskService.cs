@@ -43,6 +43,7 @@ namespace ProjectManager.Models.Services
         }
 
 
+
         public async Task<ProjectDetailsViewModel> GetProjectWithTasks(ObjectId project_id, ObjectId user_id)
         {
             var project = await MongoManipulator.GetObjectById<Project>(project_id);
@@ -59,6 +60,61 @@ namespace ProjectManager.Models.Services
                 CurrentUser = user_id
             };
         }
+
+
+
+        public async Task<List<AllTaskViewModel>> GetAllTasksForUser(ObjectId userId)
+        {
+            // Fetch all tasks assigned to the user
+            var taskFilter = Builders<TaskItem>.Filter.Eq("AssignedTo", userId);
+            var userTasks = await MongoManipulator.GetAllObjectsByFilter(taskFilter);
+
+            // If no tasks found, return an empty list
+            if (userTasks.Count == 0)
+                return new List<AllTaskViewModel>();
+
+            // Fetch all related projects based on the project IDs from the tasks
+            var projectIds = userTasks.Select(t => t.ProjectId).Distinct().ToList();
+            var projectFilter = Builders<Project>.Filter.In("_id", projectIds);
+            var relatedProjects = await MongoManipulator.GetAllObjectsByFilter(projectFilter);
+
+            // Create a mapping of ProjectId to Project and User Role in that project
+            var projectRoleMap = relatedProjects.ToDictionary(
+                p => p._id,
+                p => p.Members.ToDictionary(m => m.UserId, m => m.Role) // Map UserId -> Role for each project
+            );
+
+            // Create view models for each task
+            var taskViewModels = userTasks.Select(task =>
+            {
+                // Get the related project
+                var project = relatedProjects.First(p => p._id == task.ProjectId);
+
+                // Get the user's role in this project using the role map
+                var role = projectRoleMap.ContainsKey(task.ProjectId) && projectRoleMap[task.ProjectId].ContainsKey(userId)
+                    ? projectRoleMap[task.ProjectId][userId]
+                    : "No role"; // Default to "Viewer" if the role is not found
+
+                // Create the AllTaskViewModel and populate the task and project properties
+                return new AllTaskViewModel
+                {
+                    Task = task, // Full TaskItem
+                    ProjectTitle = project.Title,
+                    ProjectId = project._id,
+                    UseReview = project.UseReview,
+                    OpenCreate = project.OpenCreate,
+                    UserRole = role
+                };
+            }).ToList();
+
+            return taskViewModels;
+        }
+
+
+
+
+
+
     }
-    
+
 }

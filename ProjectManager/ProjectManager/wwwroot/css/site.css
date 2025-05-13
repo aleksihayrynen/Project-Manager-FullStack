@@ -904,6 +904,25 @@ padding: 0 5px 0 2px;
     margin:auto
 }
 
+.profile_header{
+    display:flex;
+    align-items:center;
+    gap: 3rem;
+    margin-bottom:4rem;
+}
+
+.profilepicture_container_profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 1px solid black;
+    overflow: clip;
+    background-color: #d5d4d4;
+}
+
 
 
 

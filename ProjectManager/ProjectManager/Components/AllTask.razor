@@ -1,5 +1,6 @@
 ﻿@using ProjectManager.Models.Services
 @using ProjectManager.Models
+@using ProjectManager.Models.ViewModels
 @using MongoDB.Bson;
 @using ProjectManager.Models.Utils
 @inject GetTaskService _getTaskService
@@ -13,7 +14,7 @@
         <thead>
             <tr class="tasktable_heading">
                 <th>
-                    Title
+                    Task
                 </th>
                 <th>
                     Project
@@ -33,52 +34,48 @@
             </tr>
         </thead>
         <tbody>
-            @if (myTaskItems != null)
+            @if (AllTaskItems != null)
             {
-                @foreach (var item in myTaskItems)
+                @foreach (var item in AllTaskItems)
                 {
                     <tr>
                         <!-- Title -->
                         <td>
-                            @if (IsEditing(item._id.ToString()))
+                            @if (IsEditing(item.Task._id.ToString()))
                             {
-                                <input type="text" class="form-control" @bind="item.Title" />
+                                <input type="text" class="form-control" @bind="item.Task.Title" />
                             }
                             else
                             {
-                                @item.Title
+                                @item.Task.Title
                             }
                         </td>
 
                         <!-- Project -->
                         <td>
-                            Project name
+                            @item.ProjectTitle
                         </td>
-                       
-
-                        <!-- Created Date (not editable) -->
-                        <td>@item.CretedDate.ToLocalTime().ToString("d", System.Globalization.CultureInfo.CurrentCulture)</td>
 
                         <!-- Due Date -->
                         <td>
-                            @if (IsEditing(item._id.ToString()))
+                            @if (IsEditing(item.Task._id.ToString()))
                             {
-                                <input type="date" class="form-control" @bind="item.DueDate" />
+                                <input type="date" class="form-control" @bind="item.Task.DueDate" />
                             }
                             else
                             {
-                                @item.DueDate.ToLocalTime().ToString("d", System.Globalization.CultureInfo.CurrentCulture)
+                                @item.Task.DueDate.ToLocalTime().ToString("d", System.Globalization.CultureInfo.CurrentCulture)
                             }
                         </td>
 
                         <!-- State -->
                         <td>
-                            @if (IsEditing(item._id.ToString()))
+                            @if (IsEditing(item.Task._id.ToString()))
                             {
-                                <select class="form-control" @bind="item.State">
+                                <select class="form-control" @bind="item.Task.State">
                                     <option value="InProgress">In Progress</option>
                                     <option value="Completed">Completed</option>
-                                    @if (projectInfo.UseReview == true)
+                                    @if (item.UseReview == true)
                                     {
                                         <option value="InReview">In Review</option>
                                     }
@@ -92,7 +89,7 @@
                         </td>
 
                        <!-- Role logic for buttons not pretty ;D -->
-                            @if (IsEditing(item._id.ToString()))
+                            @if (IsEditing(item.Task._id.ToString()))
                             {
                                 <td>
                                     
@@ -103,7 +100,7 @@
                             </td>
                             }
 
-                            else if (projectInfo.OpenCreate)
+                            else if (item.OpenCreate)
                             {
                             @if (taskToDelete != item)
                                 {
@@ -127,21 +124,21 @@
                                 }
                             }
 
-                            else if (projectInfo.OpenCreate == false && userInfo.Role == "Member" && (item.State == TaskItem.TaskState.InReview || item.State == TaskItem.TaskState.Completed))
+                            else if (item.OpenCreate == false && item.UserRole == "Member" && (item.Task.State == TaskItem.TaskState.InReview || item.Task.State == TaskItem.TaskState.Completed))
                             {
                                 <td>
                                     <p>In Review</p>
                                 </td>
                             }
 
-                            else if (projectInfo.OpenCreate == false && userInfo.Role == "Member")
+                            else if (item.OpenCreate == false && item.UserRole == "Member")
                             {
                                 <td>
                                     <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
                                 </td>
                             }
 
-                            else if (projectInfo.OpenCreate == false && userInfo.Role == "Owner")
+                            else if (item.OpenCreate == false && item.UserRole == "Owner")
                             {
                             @if (taskToDelete != item)
                                 {
@@ -179,14 +176,12 @@
 
 
 @code {
-    private List<TaskItem>? myTaskItems;
-    private Project projectInfo;
+    private List<AllTaskViewModel> AllTaskItems;
     private string? userId;
-    private ProjectMembers userInfo;
     private string? editTaskId = null;
-    private TaskItem editedBackUp = null;
+    private AllTaskViewModel editedBackUp = null;
 
-    private TaskItem taskToDelete = null;
+    private AllTaskViewModel taskToDelete = null;
 
 
     @functions {
@@ -199,9 +194,7 @@
         await FetchUserId();
         if (!string.IsNullOrEmpty(userId))
         {
-            userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == userId);
-            myTaskItems = await _getTaskService.GetTasksByUserId(new ObjectId(userId));
-
+            AllTaskItems = await _getTaskService.GetAllTasksForUser(new ObjectId(userId));
         }
     }
 
@@ -217,39 +210,63 @@
         }
     }
 
-    async Task SaveTask(TaskItem task)
+     async Task SaveTask(AllTaskViewModel task)
     {
-        await _getTaskService.UpdateTask(task);
-        editTaskId = null;
-        editedBackUp = null;
+        try
+        {
+            var taskItem = new TaskItem
+            {
+                _id = task.Task._id, // Assuming _id is a string
+                Title = task.Task.Title,
+                Description = task.Task.Description,
+                ProjectId = task.Task.ProjectId,
+                AssignedTo = task.Task.AssignedTo,
+                CreatedBy = task.Task.CreatedBy,
+                CretedDate = task.Task.CretedDate,
+                DueDate = task.Task.DueDate,
+                State = task.Task.State
+            };
+
+            await _getTaskService.UpdateTask(taskItem);
+            editTaskId = null;
+            editedBackUp = null;
+        }
+        catch (Exception ex)
+        {
+            // Handle errors during save
+        }
     }
 
-    public async Task MarkTaskAsDone(TaskItem task)
+
+    public async Task MarkTaskAsDone(AllTaskViewModel task)
     {
-    if(projectInfo.UseReview && userInfo.Role == "Member") // Makes it people who review dont have to submit to review
+    if(task.UseReview && task.UserRole == "Member") // Makes it people who review dont have to submit to review
     {
-        task.State = TaskItem.TaskState.InReview;
+        task.Task.State = TaskItem.TaskState.InReview;
+
         await SaveTask(task);
     }
     else
     {
-        task.State = TaskItem.TaskState.Completed;  // WHen a other role than user presses button the state should go to completed
+        task.Task.State = TaskItem.TaskState.Completed;  // WHen a other role than user presses button the state should go to completed
         await SaveTask(task);
     }
     }
 
-    void BeginEdit(TaskItem item)
+    void BeginEdit(AllTaskViewModel item)
     {
-    editedBackUp = new TaskItem
-            {
-                _id = item._id,
-                Title = item.Title,
-                AssignedTo = item.AssignedTo,
-                DueDate = item.DueDate,
-                State = item.State
-            };
 
-    editTaskId = item._id.ToString();
+    editedBackUp = new AllTaskViewModel
+        {
+            ProjectId = item.ProjectId,
+            ProjectTitle = item.ProjectTitle,
+            Task = item.Task,
+            UserRole = item.UserRole,
+            UseReview = item.UseReview,
+            OpenCreate = item.OpenCreate
+        };
+
+    editTaskId = item.Task._id.ToString();
     }
 
     void CancelEdit()
@@ -257,21 +274,22 @@
     // Revert the task to the backup values when editing is cancelled
     if (editedBackUp != null)
     {
-        var taskToRevert = myTaskItems?.FirstOrDefault(task => task._id.ToString() == editTaskId);
+        var taskToRevert = AllTaskItems?.FirstOrDefault(task => task.Task._id.ToString() == editTaskId);
         if (taskToRevert != null)
         {
-            // Restore the original task item data from editedBackUp
-            taskToRevert.Title = editedBackUp.Title;
-            taskToRevert.AssignedTo = editedBackUp.AssignedTo;
-            taskToRevert.DueDate = editedBackUp.DueDate;
-            taskToRevert.State = editedBackUp.State;
+            taskToRevert.ProjectId = editedBackUp.ProjectId;
+            taskToRevert.ProjectTitle = editedBackUp.ProjectTitle;
+            taskToRevert.Task = editedBackUp.Task;
+            taskToRevert.UserRole = editedBackUp.UserRole;
+            taskToRevert.UseReview = editedBackUp.UseReview;
+            taskToRevert.OpenCreate = editedBackUp.OpenCreate;
         }
     }
-    // Reset the edit mode
     editTaskId = null;
     }
 
-    private void ShowDeleteConfirmation(TaskItem task)
+
+    private void ShowDeleteConfirmation(AllTaskViewModel task)
     {
         taskToDelete = task;
     }
@@ -285,8 +303,11 @@
     {
         if (taskToDelete != null)
         {
-            await _getTaskService.DeleteTask(taskToDelete);
-            myTaskItems?.Remove(taskToDelete);
+            TaskItem taskItemToDelete = taskToDelete.Task;
+
+            await _getTaskService.DeleteTask(taskItemToDelete);
+            AllTaskItems?.Remove(taskToDelete);
+
             taskToDelete = null;
         }
     }
@@ -310,10 +331,10 @@
                 </svg>"
     };
 
-    private string GetTaskIconHtml(TaskItem item)
+        private string GetTaskIconHtml(AllTaskViewModel item)
     {
         // Check if the due date is before today
-        if (item.DueDate.ToLocalTime() < DateTime.Today.ToLocalTime() && item.State == TaskItem.TaskState.InProgress)
+        if (item.Task.DueDate.ToLocalTime() < DateTime.Today.ToLocalTime() && item.Task.State == TaskItem.TaskState.InProgress)
         {
             return @"<svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='#dc3545'>
                             <path d='M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z' />
@@ -321,7 +342,7 @@
         }
 
         // Otherwise, return the state icon based on the task's state
-        return StateIcons.TryGetValue(item.State.ToString(), out var svg)
+        return StateIcons.TryGetValue(item.Task.State.ToString(), out var svg)
             ? svg
             : ""; // Return empty string if no match found
             }
