@@ -1,82 +1,131 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using ProjectManager.Models.ViewModels
+@using ProjectManager.Models.Utils
+
+@{
+	ViewData["Title"] = "My Profile";
 }
+@model ProfileViewModel
 
-<section class="account_information">
-    <div class="profile_header">
-        <div class="profilepicture_container_profile">
-            <img class="profile_picture" src="/Media/flover.png" />
-        </div>
-        <div class="profile_header_info">
-            <h4>Aleksi Häyrynen</h4>
-            <h4>ICT-Student</h4>
-            <h4>HAMK</h4>
-        </div>
-    </div>
-</section>
-    
-<section>
-        <div class="profile_info field-group">
-            <label>Username:</label>
-            <div class="fake_input_bg">
-                <p>Aleksi</p>
-            </div>
+<div class="profile_container">
+	<div class="profile_row1">
+		<div class="profile_info_container">
+			<div class="profile_info">
+				<div class="profile_info_left">
+					<div class="profile_left_picture">
+						<div class="profilepicture_container_profile">
+							<img class="profile_picture" src="/Media/flover.png" />
+							<div class="profile_picture_overlay">Upload picture</div>
+						</div>
+					</div>
+
+					<div class="Username_profile">
+						<h2>@UtilityFunctions.CapitalizeFirstLetter(Model.User.Username)</h2>
+					</div>
+
+				</div>
+
+				<div class="profile_info_right">
+					<h4>Projects <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA6077"><path d="m226-559 78 33q14-28 29-54t33-52l-56-11-84 84Zm142 83 114 113q42-16 90-49t90-75q70-70 109.5-155.5T806-800q-72-5-158 34.5T492-656q-42 42-75 90t-49 90Zm178-65q-23-23-23-56.5t23-56.5q23-23 57-23t57 23q23 23 23 56.5T660-541q-23 23-57 23t-57-23Zm19 321 84-84-11-56q-26 18-52 32.5T532-299l33 79Zm313-653q19 121-23.5 235.5T708-419l20 99q4 20-2 39t-20 33L538-80l-84-197-171-171-197-84 167-168q14-14 33.5-20t39.5-2l99 20q104-104 218-147t235-24ZM157-321q35-35 85.5-35.5T328-322q35 35 34.5 85.5T327-151q-25 25-83.5 43T82-76q14-103 32-161.5t43-83.5Zm57 56q-10 10-20 36.5T180-175q27-4 53.5-13.5T270-208q12-12 13-29t-11-29q-12-12-29-11.5T214-265Z" /></svg></h4>
+					<h5>@Model.Total_Projects</h5>
+					<h4>Tasks done <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#198754"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"</svg></h4>
+					<h5>@Model.Total_Tasks</h5>
+
+				</div>
+
+			</div>
+		</div>
+		<div class="about_me_container">
+			<div class="About_me">
+				<div class="about_me_item">
+					<h3 id="About_me_title">About me</h3>
+					<button class="profile_edit_btn"><svg id="edit_svg" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFF0FF"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" /></svg></button>
+				</div>
+
+				<div class="about_me_item">
+					<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#FFF0FF"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z" /></svg>
+					<label>Full name:</label>
+					<p>@Model.FullName</p>
+				</div>
+
+				<div class="about_me_item">
+					<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="24px" fill="#FFF0FF"><path d="M160-120q-33 0-56.5-23.5T80-200v-440q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v440q0 33-23.5 56.5T800-120H160Zm0-80h640v-440H160v440Zm240-520h160v-80H400v80ZM160-200v-440 440Z" /></svg>
+					<label>Occupation:</label>
+					<p>@(Model.User.Occupation ?? "Not set")</p>
+				</div>
+
+				<div class="about_me_item">
+					<svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="24px" fill="#FFF0FF"><path d="M120-120v-560h160v-160h400v320h160v400H520v-160h-80v160H120Zm80-80h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 320h80v-80h-80v80Zm0-160h80v-80h-80v80Zm0-160h80v-80h-80v80Zm160 480h80v-80h-80v80Zm0-160h80v-80h-80v80Z" /></svg>
+					<label>Business:</label>
+					<p>@(Model.User.Organization ?? "Not set")</p>
+				</div>
+				<div id="About_me_title_desc">
+					<label>About me:</label>
+					<p>@(Model.User.Description ?? "No information yet ;(")</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
-            <label>Email:</label>
-            <div class="fake_input_bg">
-                <p>AleksiemaiI@gmail.com</p>
-            </div>
 
-            <form id="editProfile_Form"  onsubmit="saveForm(event)">
-            <div class="form-group">
-                <label for="occupationInput">Occupation:</label>
-                <input type="text" class="form-control" id="occupationInput" value="ICT-Student" />
-            </div>
-            <div class="form-group">
-                <label for="companyInput">Company:</label>
-                <input type="text" class="form-control" value="HAMK" />
-            </div>
+	<div class="profile_row2">
+		<div class="reset_pass_container">
+			<div class="reset_pass">
+				<div class="changepassword_fields field-group">
+					<h3 id="changepassword_title">Change password:</h3>
 
-                <button class="btn btn-primary" type="submit" style="margin-top: 15px;">Save</button>
-            </form>
-        </div>
+					<form id="change_password" asp-controller="Profile" asp-action="ChangePassword" method="post">
+						<div class="form-group">
+							<label>Old password</label>
+							<input type="password" class="form-control" name="OldPassword" placeholder="Old password" />
+						</div>
+						<div class="form-group">
+							<label>New password</label>
+							<input type="password" class="form-control" name="NewPassword" placeholder="New password" />
+						</div>
 
-        <div class="field-group">
-            <h3>Change password:</h3>
-            
+						<div class="form-group">
+							<label>Re-type new password</label>
+							<input type="password" class="form-control" name="ConfirmPassword" placeholder="Re-type new password" />
+						</div>
 
-            
 
-            
-        <form id="change_password" onsubmit="saveForm(event)">
-            <div class="form-group">
-                <label>Old password</label>
-                <input type="password" class="form-control" placeholder="Old password" />
-            </div>
-            <div class="form-group">
-                <label>New password</label>
-                <input type="password" class="form-control" placeholder="New password" />
-            </div>
 
-            <div class="form-group">
-                <label>Re-type new password</label>
-                <input type="password" class="form-control" placeholder="Re-type new password" />
-            </div>
+						<button class="btn btn-primary" type="submit" style="margin-top: 30px;">Change password</button>
+					</form>
+				</div>
+			</div>
 
-            
+		</div>
+		<div class="extra_container">
+			<h3 id="most_active_title">Most active project:</h3>
+			<div class="profile_extra">
+				<div class="profile_most_active_project">
 
-            <button class="btn btn-primary" type="submit" style="margin-top: 15px;">Save</button>
-        </form>
-        </div>
-    
-</section>
+					<h4>@UtilityFunctions.CapitalizeFirstLetter(Model.MostCommonProject_Title)</h4>
+					<div class="highest_task">
+						@if (Model.MostCommonProject_Done != 0)
+						{
+							<h1>@Model.MostCommonProject_Done</h1>
+							<svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="35px" fill="#198754"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"></path></svg>
+						}
+						else
+						{
+							<h2>No completed tasks</h2>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 
 
 @section Scripts {
-    <script>
+	<script>
 
-    </script>
+	</script>
 
 }

@@ -78,13 +78,6 @@
                         <span>Tasks</span>
                     </a>
                 </li>
-                <li class="@(currentController == "Statistics" ? "active" : "")">
-                    <a>
-                        <img src="/Media/chart_icon.svg" />
-                        <span>Analytics</span>
-                    </a>
-
-                </li>
             </ul>
         </aside>
     }
@@ -96,6 +89,12 @@
             {
                 <div class="alert alert-danger">
                     @TempData["ErrorMessage"]
+                </div>
+            }
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
                 </div>
             }
                 @RenderBody()

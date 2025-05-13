@@ -67,7 +67,6 @@ namespace ProjectManager.Controllers
                             new ClaimsPrincipal(claimsIndetity),
                             authProperties
                         );
-                        Console.WriteLine("Login succes");
                         return RedirectToAction("Index", "Home");
                     }
                     ModelState.AddModelError("Password", "Username or password incorrect");

@@ -28,5 +28,11 @@ namespace ProjectManager.Models
 
         [BsonElement("salt")]
         public byte[] Salt { get; set; }
+
+
+
+        public string? Occupation { get; set; } = "Not set";
+        public string? Organization { get; set; } = "Not set";
+        public string? Description { get; set; } = "Not set";
     }
 }
