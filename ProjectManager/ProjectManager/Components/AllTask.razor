@@ -8,7 +8,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
-<h3>My Tasks</h3>
+<h2 id="All_task_title">All Tasks</h2>
 <div class="table-scroll-container">
     <table class="tasktable">
         <thead>
@@ -38,7 +38,7 @@
             {
                 @foreach (var item in AllTaskItems)
                 {
-                    <tr>
+                    <tr @key="item.Task._id">
                         <!-- Title -->
                         <td>
                             @if (IsEditing(item.Task._id.ToString()))
@@ -47,13 +47,15 @@
                             }
                             else
                             {
-                                @item.Task.Title
+
+                                @UtilityFunctions.CapitalizeFirstLetter(item.Task.Title)
+                                
                             }
                         </td>
 
                         <!-- Project -->
                         <td>
-                            @item.ProjectTitle
+                            @UtilityFunctions.CapitalizeFirstLetter(item.ProjectTitle)
                         </td>
 
                         <!-- Due Date -->
@@ -88,79 +90,80 @@
                             }
                         </td>
 
-                       <!-- Role logic for buttons not pretty ;D -->
-                            @if (IsEditing(item.Task._id.ToString()))
-                            {
-                                <td>
-                                    
-                                </td>
+                        <!-- Role logic for buttons not pretty ;D -->
+                        @if (IsEditing(item.Task._id.ToString()))
+                        {
+                            <td>
+
+                            </td>
                             <td>
                                 <button class="btn btn-sm btn-primary me-2" @onclick="() => SaveTask(item)">Save</button>
                                 <button class="btn btn-sm btn-danger" @onclick="CancelEdit">Cancel</button>
                             </td>
-                            }
+                        }
 
-                            else if (item.OpenCreate)
-                            {
+                        else if (item.OpenCreate)
+                        {
                             @if (taskToDelete != item)
-                                {
-                                    <td>
-                                        <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
-                                        
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
-                                        <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                    <td>
-                                        <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
-                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-                                    </td>
-
-                                }
-                            }
-
-                            else if (item.OpenCreate == false && item.UserRole == "Member" && (item.Task.State == TaskItem.TaskState.InReview || item.Task.State == TaskItem.TaskState.Completed))
                             {
                                 <td>
-                                    <p>In Review</p>
+                                    <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
+
+                                </td>
+                                <td>
+                                    <button></button>
+                                    <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
+                                    <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
                                 </td>
                             }
+                            else
+                            {
+                                <td></td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
+                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                                </td>
 
-                            else if (item.OpenCreate == false && item.UserRole == "Member")
+                            }
+                        }
+
+                        else if (item.OpenCreate == false && item.UserRole == "Member" && (item.Task.State == TaskItem.TaskState.InReview || item.Task.State == TaskItem.TaskState.Completed))
+                        {
+                            <td>
+                                <p>In Review</p>
+                            </td>
+                        }
+
+                        else if (item.OpenCreate == false && item.UserRole == "Member")
+                        {
+                            <td>
+                                <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
+                            </td>
+                        }
+
+                        else if (item.OpenCreate == false && item.UserRole == "Owner")
+                        {
+                            @if (taskToDelete != item)
                             {
                                 <td>
                                     <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
                                 </td>
+                                <td>
+                                    <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
+                                    <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
+                                </td>
                             }
-
-                            else if (item.OpenCreate == false && item.UserRole == "Owner")
+                            else
                             {
-                            @if (taskToDelete != item)
-                                {
-                                    <td>
-                                        <button class="btn btn-success" @onclick="() => MarkTaskAsDone(item)">Done</button>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-warning" @onclick="() => BeginEdit(item)">Edit</button>
-                                        <button class="btn btn-danger" @onclick="() => ShowDeleteConfirmation(item)">Delete</button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
-                                        <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-                                    </td>
+                                <td>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="() => ConfirmDelete()">Confirm Delete</button>
+                                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                                </td>
 
-                                }
                             }
+                        }
                     </tr>
                 }
             }
@@ -176,7 +179,7 @@
 
 
 @code {
-    private List<AllTaskViewModel> AllTaskItems;
+    private List<AllTaskViewModel>? AllTaskItems;
     private string? userId;
     private string? editTaskId = null;
     private AllTaskViewModel editedBackUp = null;
@@ -184,9 +187,7 @@
     private AllTaskViewModel taskToDelete = null;
 
 
-    @functions {
-        bool IsEditing(string taskId) => editTaskId == taskId;
-    }
+    private bool IsEditing(string taskId) => editTaskId == taskId;
 
 
     protected override async Task OnInitializedAsync()
@@ -210,22 +211,22 @@
         }
     }
 
-     async Task SaveTask(AllTaskViewModel task)
+    public async Task SaveTask(AllTaskViewModel task)
     {
         try
         {
             var taskItem = new TaskItem
-            {
-                _id = task.Task._id, // Assuming _id is a string
-                Title = task.Task.Title,
-                Description = task.Task.Description,
-                ProjectId = task.Task.ProjectId,
-                AssignedTo = task.Task.AssignedTo,
-                CreatedBy = task.Task.CreatedBy,
-                CretedDate = task.Task.CretedDate,
-                DueDate = task.Task.DueDate,
-                State = task.Task.State
-            };
+                {
+                    _id = task.Task._id, 
+                    Title = task.Task.Title,
+                    Description = task.Task.Description,
+                    ProjectId = task.Task.ProjectId,
+                    AssignedTo = task.Task.AssignedTo,
+                    CreatedBy = task.Task.CreatedBy,
+                    CretedDate = task.Task.CretedDate,
+                    DueDate = task.Task.DueDate,
+                    State = task.Task.State
+                };
 
             await _getTaskService.UpdateTask(taskItem);
             editTaskId = null;
@@ -233,30 +234,30 @@
         }
         catch (Exception ex)
         {
-            // Handle errors during save
+            Console.WriteLine($"Error while saving task: {ex.Message}");
         }
     }
 
 
     public async Task MarkTaskAsDone(AllTaskViewModel task)
     {
-    if(task.UseReview && task.UserRole == "Member") // Makes it people who review dont have to submit to review
-    {
-        task.Task.State = TaskItem.TaskState.InReview;
+        if(task.UseReview && task.UserRole == "Member") // Makes it people who review dont have to submit to review
+        {
+            task.Task.State = TaskItem.TaskState.InReview;
 
-        await SaveTask(task);
-    }
-    else
-    {
-        task.Task.State = TaskItem.TaskState.Completed;  // WHen a other role than user presses button the state should go to completed
-        await SaveTask(task);
-    }
+            await SaveTask(task);
+        }
+        else
+        {
+            task.Task.State = TaskItem.TaskState.Completed;  // WHen a other role than user presses button the state should go to completed
+            await SaveTask(task);
+        }
     }
 
     void BeginEdit(AllTaskViewModel item)
     {
 
-    editedBackUp = new AllTaskViewModel
+        editedBackUp = new AllTaskViewModel
         {
             ProjectId = item.ProjectId,
             ProjectTitle = item.ProjectTitle,
@@ -266,26 +267,29 @@
             OpenCreate = item.OpenCreate
         };
 
-    editTaskId = item.Task._id.ToString();
+        editTaskId = item.Task._id.ToString();
     }
 
     void CancelEdit()
     {
     // Revert the task to the backup values when editing is cancelled
-    if (editedBackUp != null)
-    {
-        var taskToRevert = AllTaskItems?.FirstOrDefault(task => task.Task._id.ToString() == editTaskId);
-        if (taskToRevert != null)
+        if (editedBackUp != null)
         {
-            taskToRevert.ProjectId = editedBackUp.ProjectId;
-            taskToRevert.ProjectTitle = editedBackUp.ProjectTitle;
-            taskToRevert.Task = editedBackUp.Task;
-            taskToRevert.UserRole = editedBackUp.UserRole;
-            taskToRevert.UseReview = editedBackUp.UseReview;
-            taskToRevert.OpenCreate = editedBackUp.OpenCreate;
+            var taskToRevert = AllTaskItems?.FirstOrDefault(task => task.Task._id.ToString() == editTaskId);
+            if (taskToRevert != null)
+            {
+                taskToRevert.ProjectId = editedBackUp.ProjectId;
+                taskToRevert.ProjectTitle = editedBackUp.ProjectTitle;
+                taskToRevert.Task = editedBackUp.Task;
+                taskToRevert.UserRole = editedBackUp.UserRole;
+                taskToRevert.UseReview = editedBackUp.UseReview;
+                taskToRevert.OpenCreate = editedBackUp.OpenCreate;
+            }
         }
-    }
-    editTaskId = null;
+        else
+        {
+            editTaskId = null;
+        }
     }
 
 

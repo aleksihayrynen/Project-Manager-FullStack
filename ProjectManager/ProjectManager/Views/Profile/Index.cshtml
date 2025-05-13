@@ -15,44 +15,63 @@
     </div>
 </section>
     
+<section>
+        <div class="profile_info field-group">
+            <label>Username:</label>
+            <div class="fake_input_bg">
+                <p>Aleksi</p>
+            </div>
 
-    <div class="field-group">
-        <label>Username:</label>
-        <p>Aleksi</p>
 
-        <label>Email:</label>
-        <p>AleksiemaiI@gmail.com</p>
+            <label>Email:</label>
+            <div class="fake_input_bg">
+                <p>AleksiemaiI@gmail.com</p>
+            </div>
 
-        <div id="occupationCompanyView" class="read-only">
-            <label>Occupation:</label>
-            <p id="occupationText">ICT-Student</p>
+            <form id="editProfile_Form"  onsubmit="saveForm(event)">
+            <div class="form-group">
+                <label for="occupationInput">Occupation:</label>
+                <input type="text" class="form-control" id="occupationInput" value="ICT-Student" />
+            </div>
+            <div class="form-group">
+                <label for="companyInput">Company:</label>
+                <input type="text" class="form-control" value="HAMK" />
+            </div>
 
-            <label>Company:</label>
-            <p id="companyText">HAMK</p>
+                <button class="btn btn-primary" type="submit" style="margin-top: 15px;">Save</button>
+            </form>
         </div>
 
-        <form id="editForm" class="editable-form" onsubmit="saveForm(event)">
-            <label for="occupationInput">Occupation:</label>
-            <input type="text" id="occupationInput" value="ICT-Student" />
+        <div class="field-group">
+            <h3>Change password:</h3>
+            
 
-            <label for="companyInput">Company:</label>
-            <input type="text" id="companyInput" value="HAMK" />
+            
 
-            <button type="submit" class="edit-button" style="margin-top: 15px;">Save</button>
+            
+        <form id="change_password" onsubmit="saveForm(event)">
+            <div class="form-group">
+                <label>Old password</label>
+                <input type="password" class="form-control" placeholder="Old password" />
+            </div>
+            <div class="form-group">
+                <label>New password</label>
+                <input type="password" class="form-control" placeholder="New password" />
+            </div>
+
+            <div class="form-group">
+                <label>Re-type new password</label>
+                <input type="password" class="form-control" placeholder="Re-type new password" />
+            </div>
+
+            
+
+            <button class="btn btn-primary" type="submit" style="margin-top: 15px;">Save</button>
         </form>
-    </div>
+        </div>
+    
+</section>
 
-    <div class="field-group">
-        <h3>Change password:</h3>
-        <label>Old password</label>
-        <input type="password" placeholder="Old password" />
-
-        <label>New password</label>
-        <input type="password" placeholder="New password" />
-
-        <label>Re-type new password</label>
-        <input type="password" placeholder="Re-type new password" />
-    </div>
 
 
 @section Scripts {

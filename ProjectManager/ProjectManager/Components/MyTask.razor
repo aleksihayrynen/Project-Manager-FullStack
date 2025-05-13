@@ -223,9 +223,7 @@
     private TaskItem taskToDelete = null;
 
 
-    @functions {
-        bool IsEditing(string taskId) => editTaskId == taskId;
-    }
+    private bool IsEditing(string taskId) => editTaskId == taskId;
 
     [Parameter]
     public string ProjectId { get; set; }

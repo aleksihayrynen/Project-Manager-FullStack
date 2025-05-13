@@ -4,7 +4,6 @@ using ProjectManager.Models;
 using System.Security.Cryptography;
 using ProjectManager.Models.ViewModels;
 using ProjectManager.Encryption;
-using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;

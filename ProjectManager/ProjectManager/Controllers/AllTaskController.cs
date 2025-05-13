@@ -8,6 +8,7 @@ namespace ProjectManager.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["Title"] = "Tasks";
             return View();
         }
     }
