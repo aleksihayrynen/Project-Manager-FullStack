@@ -10,8 +10,8 @@
 <h3>TaskList</h3>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
-    <div class="alert alert-danger blazor_error_message">
-        <h3>@errorMessage</h3>
+    <div class="alert alert-danger fade-message">
+        @errorMessage
     </div>
 }
 <div class="table-scroll-container">
@@ -247,7 +247,6 @@
         projectInfo = await _getProjectsService.GetProjectById(parsedId);
         userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == userId);
         taskitems = await _getTaskService.GetTasksByProjectId(parsedId);
-
     }
     }
 
@@ -263,42 +262,96 @@
     }
     }
 
+
+
+	// Call this method when you want to display the error message
+	public void ShowErrorMessage(string message)
+	{
+    errorMessage = message;
+
+    // Call delay to hide the message after 2 seconds
+    _ = HideErrorMessageAfterDelay();
+	}
+
+	private async Task HideErrorMessageAfterDelay()
+	{
+    await Task.Delay(2000);  // Wait for 2 seconds
+    errorMessage = null;      // Clear the error message
+
+    StateHasChanged();  // Refresh the UI to reflect the changes
+	}
+
     async Task SaveTask(TaskItem task)
     {
-        if (!projectInfo.OpenCreate && userInfo.Role == "Member") // Backend logic to stop normal users from using Save if they manage to use it somehow
-        {
-            editTaskId = null;
-            editedBackUp = null;   
-        }
-        else
-        {
-            await _getTaskService.UpdateTask(task);
-            editTaskId = null;
-            editedBackUp = null;
-        }
+    if (userInfo.Role == "Owner") // Backend logic to stop normal users from using Save if they manage to use it somehow
+    {
+        await _getTaskService.UpdateTask(task);
+        editTaskId = null;
+        editedBackUp = null;
+    }
+    else if (userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
+    {
+        await _getTaskService.UpdateTask(task);
+        editTaskId = null;
+        editedBackUp = null;
+    }
+    else
+    {
+        errorMessage = "You do not have rights to mark this Task";
+    }
     }
 
     public async Task MarkTaskAsDone(TaskItem task)
     {
-    if(projectInfo.UseReview && userInfo.Role == "Member") // Makes it people who review dont have to submit to review
+    if (userInfo.Role == "Owner")
+    {
+        await SaveTask(task); // Owner can always mark it as done
+    }
+    else if (projectInfo.UseReview && userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
     {
         task.State = TaskItem.TaskState.InReview;
         await SaveTask(task);
     }
+    else if (!projectInfo.UseReview && userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
+    {
+
+        await SaveTask(task); // Save whether in review or completed
+    }
     else
     {
-        task.State = TaskItem.TaskState.Completed;  // WHen a other role than Member presses button the state should go to completed
-        await SaveTask(task);
+        ShowErrorMessage("You do not have rights to mark this Task");
     }
     }
 
     void BeginEdit(TaskItem item)
     {
-    if (!projectInfo.OpenCreate && userInfo.Role == "Member") // Backend logic to stop normal users from using Edit if they manage to use it somehow
+    if (userInfo.Role == "Owner") // Backend logic to stop normal users from using Edit if they manage to use it somehow
     {
-         // Maybe add error notice here
+        editedBackUp = new TaskItem
+                    {
+                        _id = item._id,
+                        Title = item.Title,
+                        AssignedTo = item.AssignedTo,
+                        DueDate = item.DueDate,
+                        State = item.State
+                    };
+
+        editTaskId = item._id.ToString();
     }
-    else
+    else if (projectInfo.OpenCreate && userInfo.Role == "Member" && userId == item.AssignedTo.ToString())
+    {
+        editedBackUp = new TaskItem
+                    {
+                        _id = item._id,
+                        Title = item.Title,
+                        AssignedTo = item.AssignedTo,
+                        DueDate = item.DueDate,
+                        State = item.State
+                    };
+
+        editTaskId = item._id.ToString();
+    }
+    else if (projectInfo.OpenCreate && userInfo.Role == "Member" && userId == item.CreatedBy.ToString())
     {
         editedBackUp = new TaskItem
                 {
@@ -311,8 +364,13 @@
 
         editTaskId = item._id.ToString();
     }
+    else
+    {
+        ShowErrorMessage("You do not have rights to mark this Task");
     }
-    
+    }
+
+
 
     void CancelEdit()
     {
@@ -345,19 +403,39 @@
 
     private async Task ConfirmDelete()
     {
-        if (!projectInfo.OpenCreate && userInfo.Role == "Member") // Backend logic to stop normal users from using delete if they manage to use it somehow
+    if (userInfo.Role == "Owner") // Backend logic to stop normal users from using delete if they manage to use it somehow
+    {
+        if (taskToDelete != null)
         {
-            taskToDelete = null;  // Maybe add error notice here
+            await _getTaskService.DeleteTask(taskToDelete);
+            taskitems?.Remove(taskToDelete);
+            taskToDelete = null;
         }
-        else
+
+    }
+    else if (projectInfo.OpenCreate && userInfo.Role == "Member" && userId == taskToDelete.AssignedTo.ToString())
+    {
+        if (taskToDelete != null)
         {
-            if (taskToDelete != null)
-            {
-                await _getTaskService.DeleteTask(taskToDelete);
-                taskitems?.Remove(taskToDelete);
-                taskToDelete = null;
-            }
+            await _getTaskService.DeleteTask(taskToDelete);
+            taskitems?.Remove(taskToDelete);
+            taskToDelete = null;
         }
+    }
+    else if (projectInfo.OpenCreate && userInfo.Role == "Member" && userId == taskToDelete.CreatedBy.ToString())
+    {
+        if (taskToDelete != null)
+        {
+            await _getTaskService.DeleteTask(taskToDelete);
+            taskitems?.Remove(taskToDelete);
+            taskToDelete = null;
+        }
+    }
+    else
+    {
+        taskToDelete = null;
+        ShowErrorMessage("You do not have rights to mark this Task");
+    }
     }
     
         

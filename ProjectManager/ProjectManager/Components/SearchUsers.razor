@@ -4,6 +4,7 @@
 @using ProjectManager.Models
 @using ProjectManager.Models.Utils
 @using MongoDB.Bson
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="invite-modal">
     <h3 id="inviteModal_title">Invite Users</h3>
@@ -41,6 +42,12 @@
     @if (selectedUsers.Any())
     {
         <div class="mt-3">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
             <strong>Users to invite:</strong>
             <div class="selected-user-list">
                 @foreach (var user in selectedUsers)
@@ -61,6 +68,7 @@
     private List<UserSearchList> searchResults = new();
     private List<UserSearchList> selectedUsers = new();
     private Project projectInfo;
+    private string? errorMessage;
 
     private CancellationTokenSource debounceCts;
     private const int DebounceDelay = 300; // milliseconds
@@ -81,6 +89,23 @@
                 DebounceSearch(); // debounce logic
             }
         }
+    }
+
+    // Call this method when you want to display the error message
+    public void ShowErrorMessage(string message)
+    {
+        errorMessage = message;
+
+        // Call delay to hide the message after 2 seconds
+        _ = HideErrorMessageAfterDelay();
+    }
+
+    private async Task HideErrorMessageAfterDelay()
+    {
+        await Task.Delay(2000);  // Wait for 2 seconds
+        errorMessage = null;      // Clear the error message
+
+        StateHasChanged();  // Refresh the UI to reflect the changes
     }
 
     protected override async Task OnInitializedAsync()
@@ -168,11 +193,43 @@
 
     private async Task SubmitInvites()
     {
-        var userIds = selectedUsers.Select(u => u.UserId).ToList();
-        await _getProjectsService.InviteUsersToProject(ProjectId, userIds);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        selectedUsers.Clear();
-        searchText = "";
-        searchResults.Clear();
+        var currentUserId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (!string.IsNullOrEmpty(currentUserId))
+        {
+
+            var userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == currentUserId);
+            if (userInfo.Role == "Owner")
+            {
+                var userIds = selectedUsers.Select(u => u.UserId).ToList();
+                await _getProjectsService.InviteUsersToProject(ProjectId, userIds);
+
+                selectedUsers.Clear();
+                searchText = "";
+                searchResults.Clear();
+            }
+            else if (projectInfo.OpenInvite && userInfo.Role == "Member")
+            {
+                var userIds = selectedUsers.Select(u => u.UserId).ToList();
+                await _getProjectsService.InviteUsersToProject(ProjectId, userIds);
+
+                selectedUsers.Clear();
+                searchText = "";
+                searchResults.Clear();
+            }
+            else
+            {
+                ShowErrorMessage("You do not have permission to invite users to this project.");
+            }
+
+
+        }
+        else
+        {
+            ShowErrorMessage("You do not have permission to invite users to this project.");
+        }
     }
 }

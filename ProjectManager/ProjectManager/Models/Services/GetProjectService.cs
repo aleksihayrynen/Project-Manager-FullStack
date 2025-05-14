@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using ProjectManager.Models.ViewModels;
@@ -25,6 +26,26 @@ namespace ProjectManager.Models.Services
                 return true;
             }
                 
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> OwnerValidationAsync(ObjectId userId, ObjectId project_id)
+        {
+            var project = await MongoManipulator.GetObjectById<Project>(project_id) ?? throw new KeyNotFoundException("Project not found."); ;
+
+            return CheckOwnerValidation(userId, project.Members); ;
+        }
+
+        private bool CheckOwnerValidation(ObjectId userId, List<ProjectMembers> membersList)
+        {
+            if (membersList.Any(m => m.UserId == userId && m.Role == "Owner"))
+            {
+                return true;
+            }
+
             else
             {
                 return false;
@@ -83,11 +104,13 @@ namespace ProjectManager.Models.Services
                     TaskInReview = tasks.Count(t => t.State == TaskState.InReview),
                     AssignedTask = tasks.Count(t => t.State == TaskState.InProgress),
                     LateTask =  tasks.Count(t => t.State == TaskState.InProgress && t.DueDate.ToLocalTime() < DateTime.Today),
+                    IsOwner = project.Members.Any(m => m.UserId == userId && m.Role == "Owner"),
                     NextTaskDueDate = tasks
                     .Where(t => t.State != TaskState.Completed)
                     .OrderBy(t => t.DueDate)
                     .Select(t => (DateTime?)t.DueDate)
                     .FirstOrDefault()
+                    
                 };
             }).ToList();
         }

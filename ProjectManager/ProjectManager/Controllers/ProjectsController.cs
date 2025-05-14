@@ -206,6 +206,7 @@ namespace ProjectManager.Controllers
                 if (HttpContext.User.Claims != null)
                 {
                     var userId = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+                    
 
                     if (string.IsNullOrEmpty(userId))
                         throw new InvalidOperationException("User is null. Unable to proceed.");
@@ -313,6 +314,72 @@ namespace ProjectManager.Controllers
             }
         }
 
+        [Authorize]
+        public async Task<IActionResult> Settings(ObjectId project_id)
+        {
+            
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+            string refererUrl = Request.Headers["Referer"].ToString();
+
+            var isOwner = await _getProjectsService.OwnerValidationAsync(new ObjectId(userId), project_id);
+
+            if (!isOwner)
+            {
+                TempData["ErrorMessage"] = "You don't have the rights to access the settings of this project.";
+
+                
+                return Redirect(refererUrl ?? Url.Action("Index", "Home")); // To get tback to the project details page Null check if no previous page
+            }
+            else
+            {
+                try
+                {
+                    var result = await _getProjectsService.GetProjectById(project_id);
+                    return View(result);
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                    // Redirect to a generic error page
+                    return RedirectToAction("Error", "Home");
+                }
+            }
+        }
+
+
+        [HttpPost, ValidateAntiForgeryToken, Authorize]
+        public async Task<IActionResult> Delete(ObjectId project_id)
+        {
+
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+            var isOwner = await _getProjectsService.OwnerValidationAsync(new ObjectId(userId), project_id);
+
+            if (!isOwner)
+            {
+                TempData["ErrorMessage"] = "You don't have rights to do that";
+                return Forbid();
+            }
+            else
+            {
+                try
+                {
+
+                    await MongoManipulator.DeleteByIdHelper<Project>(project_id);
+                    return RedirectToAction("Index", "Projects");
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred: " + ex.Message;
+                    return RedirectToAction("Index", "Projects");
+                }
+
+            }
+        }
 
     }
 }
+

@@ -1,6 +1,5 @@
 ﻿@using ProjectManager.Components
 @using ProjectManager.Models.ViewModels
-@using ProjectManager.Models.Utils
 @model Project
 
 
@@ -14,7 +13,7 @@
     </a>
 
     <a asp-action="MyTasks" asp-controller="Projects" asp-route-project_id="@Model._id">
-        <div class="tab_nav ">
+        <div class="tab_nav">
 
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFF0FF"><path d="M272-160q-30 0-51-21t-21-51q0-21 12-39.5t32-26.5l156-62v-90q-54 63-125.5 96.5T120-320v-80q68 0 123.5-28T344-508l54-64q12-14 28-21t34-7h40q18 0 34 7t28 21l54 64q45 52 100.5 80T840-400v80q-83 0-154.5-33.5T560-450v90l156 62q20 8 32 26.5t12 39.5q0 30-21 51t-51 21H400v-20q0-26 17-43t43-17h120q9 0 14.5-5.5T600-260q0-9-5.5-14.5T580-280H460q-42 0-71 29t-29 71v20h-88Zm208-480q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z" /></svg>
             <p>MyTasks</p>
@@ -23,13 +22,13 @@
     </a>
 
     <a asp-action="Members" asp-controller="Projects" asp-route-project_id="@Model._id">
-        <div class="tab_nav active">
+        <div class="tab_nav">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFF0FF"><path d="M411-480q-28 0-46-21t-13-49l12-72q8-43 40.5-70.5T480-720q44 0 76.5 27.5T597-622l12 72q5 28-13 49t-46 21H411Zm24-80h91l-8-49q-2-14-13-22.5t-25-8.5q-14 0-24.5 8.5T443-609l-8 49ZM124-441q-23 1-39.5-9T63-481q-2-9-1-18t5-17q0 1-1-4-2-2-10-24-2-12 3-23t13-19l2-2q2-19 15.5-32t33.5-13q3 0 19 4l3-1q5-5 13-7.5t17-2.5q11 0 19.5 3.5T208-626q1 0 1.5.5t1.5.5q14 1 24.5 8.5T251-596q2 7 1.5 13.5T250-570q0 1 1 4 7 7 11 15.5t4 17.5q0 4-6 21-1 2 0 4l2 16q0 21-17.5 36T202-441h-78Zm676 1q-33 0-56.5-23.5T720-520q0-12 3.5-22.5T733-563l-28-25q-10-8-3.5-20t18.5-12h80q33 0 56.5 23.5T880-540v20q0 33-23.5 56.5T800-440ZM0-240v-63q0-44 44.5-70.5T160-400q13 0 25 .5t23 2.5q-14 20-21 43t-7 49v65H0Zm240 0v-65q0-65 66.5-105T480-450q108 0 174 40t66 105v65H240Zm560-160q72 0 116 26.5t44 70.5v63H780v-65q0-26-6.5-49T754-397q11-2 22.5-2.5t23.5-.5Zm-320 30q-57 0-102 15t-53 35h311q-9-20-53.5-35T480-370Zm0 50Zm1-280Z" /></svg>
             <p>Members</p>
         </div>
     </a>
     <a asp-action="Settings" asp-controller="Projects" asp-route-project_id="@Model._id">
-        <div class="tab_nav">
+        <div class="tab_nav active">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFF0FF"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z" /></svg>
             <p>Settings</p>
         </div>
@@ -37,44 +36,83 @@
 
 </div>
 
-<div class="Members_list">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Profile</th>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var member in Model.Members)
-            {
-                <tr>
-                    <td>
-                        <div class="Memberlist_assigned_flex">
-                            <div class="profilepicture_container_tasklist">
-                                <img class="profile_picture" src="/Media/flover.png" alt="Profile Picture" />
-                            </div>
-                        </div>
-                    </td>
 
-                    <td>@UtilityFunctions.CapitalizeFirstLetter(member.Username)</td>
-                    <td>@UtilityFunctions.CapitalizeFirstLetter(member.FirstName) @UtilityFunctions.CapitalizeFirstLetter(member.LastName)</td>
-                    <td>
-                        @UtilityFunctions.CapitalizeFirstLetter(member.Role)
-                        @if(member.Role == "Owner")
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFF55"><path d="M200-160v-80h560v80H200Zm0-140-51-321q-2 0-4.5.5t-4.5.5q-25 0-42.5-17.5T80-680q0-25 17.5-42.5T140-740q25 0 42.5 17.5T200-680q0 7-1.5 13t-3.5 11l125 56 125-171q-11-8-18-21t-7-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820q0 15-7 28t-18 21l125 171 125-56q-2-5-3.5-11t-1.5-13q0-25 17.5-42.5T820-740q25 0 42.5 17.5T880-680q0 25-17.5 42.5T820-620q-2 0-4.5-.5t-4.5-.5l-51 321H200Zm68-80h424l26-167-105 46-133-183-133 183-105-46 26 167Zm212 0Z" /></svg>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="form-group">
+    <label for="Description" class="control-label">Description</label>
+    <p>@Model.Description</p>
 </div>
 
+<hr />
+
+<div class="form-group">
+    <label class="control-label">Open Tasks Creation: </label>
+    <div class="status-pill @(Model.OpenCreate ? "pill-allowed" : "pill-denied")">
+        @(Model.OpenCreate ? "Allowed" : "Denied")
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label">Open Invite: </label>
+    <div class="status-pill @(Model.OpenInvite ? "pill-allowed" : "pill-denied")">
+        @(Model.OpenInvite ? "Allowed" : "Denied")
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label">Use Review: </label>
+    <div class="status-pill @(Model.UseReview ? "pill-allowed" : "pill-denied")">
+        @(Model.UseReview ? "Allowed" : "Denied")
+    </div>
+</div>
+
+<hr />
+
+<div id="deleteSection">
+    <button class="btn btn-danger" onclick="showConfirmButtons()">Delete Project</button>
+</div>
+
+<div id="confirmButtons" style="display: none;">
+    <p style="margin-bottom: 8px;">Delete this project?</p>
+    @Html.AntiForgeryToken()
+    <button class="btn btn-danger" onclick="confirmDelete()">Confirm</button>
+    <button class="btn btn-outline-secondary" onclick="cancelDelete()">Cancel</button>
+
+</div>
 
 @section Scripts {
-    <script src="_framework/blazor.server.js"></script>
+    <script>
+        function showConfirmButtons() {
+            document.getElementById("deleteSection").style.display = "none";
+            document.getElementById("confirmButtons").style.display = "inline-block";
+        }
+
+        function cancelDelete() {
+            document.getElementById("deleteSection").style.display = "inline-block";
+            document.getElementById("confirmButtons").style.display = "none";
+        }
+
+        function confirmDelete() {
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Projects/Delete',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                },
+                data: {
+                    project_id: '@Model._id',
+                    // add other `Project` fields if required by model binding
+                },
+                success: function () {
+                    window.location.href = '/Projects';
+                },
+                error: function (xhr) {
+                    alert("Delete failed: " + xhr.statusText);
+                }
+            });
+        }
+
+              
+    </script>
 }

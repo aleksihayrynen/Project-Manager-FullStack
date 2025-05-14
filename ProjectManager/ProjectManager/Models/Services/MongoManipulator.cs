@@ -146,5 +146,19 @@ namespace ProjectManager.Models.Services
             await Delete(entity);
         }
 
+        private static async Task DeleteById<T>(ObjectId id) where T : DB_SaveableObject
+        {
+            string collectionName = typeof(T).Name;
+            var collection = GetDB().GetCollection<T>(collectionName);
+            var filter = Builders<T>.Filter.Eq(e => e._id, id);
+            await collection.DeleteOneAsync(filter);
+        }
+
+        public static async Task DeleteByIdHelper<T>(ObjectId id) where T : DB_SaveableObject
+        {
+            await DeleteById<T>(id);
+        }
     }
+
 }
+
