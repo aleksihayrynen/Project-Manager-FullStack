@@ -7,6 +7,8 @@ using ProjectManager.Models.ViewModels;
 using System.Security.Claims;
 using ProjectManager.Encryption;
 using System.Security.Cryptography;
+using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ProjectManager.Controllers
 {
@@ -67,9 +69,40 @@ namespace ProjectManager.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> SaveProfile([FromBody] ProfileEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    TempData["ErrorMessage"] = "No user ID found";
+                    return Unauthorized();
+                }
 
+                var user = await MongoManipulator.GetObjectById<User>(userId); // however you get current user
+                user.Description = model.Description;
+                user.Occupation = model.Occupation;
+                user.Organization = model.Organization;
+
+                await MongoManipulator.Save(user); // your own save method
+
+
+                return Json(new { success = true });
+
+            }
+            var errors = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+
+            return Json(new { success = false, errors });
+        }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword()
         {
             var oldPassword = Request.Form["OldPassword"].ToString().Trim();
@@ -84,6 +117,7 @@ namespace ProjectManager.Controllers
             else if (string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
             {
                 TempData["ErrorMessage"] = "Passwords cannot be empty";
+                return RedirectToAction("Index");
             }
             else
             {
@@ -126,12 +160,6 @@ namespace ProjectManager.Controllers
                     }
                 }
             }
-
-             
-            
-
-            TempData["Success"] = "Password updated successfully.";
-            return RedirectToAction("Index");
         }
     }
 }

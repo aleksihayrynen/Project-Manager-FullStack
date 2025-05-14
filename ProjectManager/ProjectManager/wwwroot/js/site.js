@@ -3,6 +3,13 @@
 
 // Write your JavaScript code.
 
+$(document).ready(function () {
+    setTimeout(function () {
+        $(".fade-message").fadeOut("slow");
+    }, 3000);
+});
+
+
 const sidebar = document.querySelector(".side_nav");
 function toggleMenu() {
     sidebar.classList.toggle("close");

@@ -1010,7 +1010,7 @@ padding: 0 5px 0 2px;
     border: solid 3px var(--colourpalette-pink)
 }
 
-.profile_edit_btn {
+#profile_edit_btn {
     background: none;
     border: none;
     margin-bottom: 15px;
@@ -1019,10 +1019,6 @@ padding: 0 5px 0 2px;
 #edit_svg:hover {
     fill: #EA6077;
 }
-
-
-
-
 
 
 .reset_pass_container {
@@ -1073,6 +1069,7 @@ padding: 0 5px 0 2px;
     border: 2px solid transparent;
     background-origin: border-box;
     background-clip: padding-box, border-box;
+
 }
 
 .About_me h5,p{
@@ -1139,6 +1136,29 @@ padding: 0 5px 0 2px;
     width:100%;
 }
 
+.editable_input {
+    display:none;
+}
+
+#profile_saveEdit_btn {
+    display: none;
+    margin-left:100px;
+}
+#profile_cancelEdit_btn {
+    display: none;
+    margin-left: 10px;
+}
+
+#profile_saveEdit_btn, #profile_cancelEdit_btn {
+    height:35px;
+    width:60px;
+    padding:0;
+
+}
+#profile_cancelEdit_btn {
+    border: solid 1px #dc3545;
+    
+}
 
 
 
@@ -1149,8 +1169,8 @@ padding: 0 5px 0 2px;
 
 
 
-@media screen and (max-width: 1050px) {
-    .profile_row1, .profile_row2 {
+    @media screen and (max-width: 1050px) {
+        .profile_row1, .profile_row2 {
         display: flex;
         height: 50%;
         width: 100%;
