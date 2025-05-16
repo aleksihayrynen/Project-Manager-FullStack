@@ -24,7 +24,7 @@ namespace ProjectManager.Controllers
         }
 
 
-
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -68,6 +68,7 @@ namespace ProjectManager.Controllers
             return View(viewModel);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SaveProfile([FromBody] ProfileEditViewModel model)
@@ -100,6 +101,7 @@ namespace ProjectManager.Controllers
             return Json(new { success = false, errors });
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword()

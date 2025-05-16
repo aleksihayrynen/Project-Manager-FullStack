@@ -58,7 +58,7 @@
                             {
                                 <div class="Assigned_flex">
                                     <div class="profilepicture_container_tasklist">
-                                        <img class="profile_picture" src="/Media/flover.png" />
+                                        <img class="profile_picture" src="/Images/GetProfilePicture?userId=@item.AssignedTo" alt="Assigned to profile picture" />
                                     </div>
                                     <p>@projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo)?.Username </p>
                                 </div>
@@ -75,7 +75,7 @@
                             }
                             else
                             {
-                                @item.Title
+                                @UtilityFunctions.CapitalizeFirstLetter(item.Title)
                             }
                         </td>
 
@@ -83,9 +83,9 @@
                         <td>
                             <div class="Assigned_flex">
                                 <div class="profilepicture_container_tasklist">
-                                    <img class="profile_picture" src="/Media/flover.png" />
+                                    <img class="profile_picture" src="/Images/GetProfilePicture?userId=@item.CreatedBy" alt="Created by to profile picture" />
                                 </div>
-                                <p>@projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy)?.Username </p>
+                        <p>@UtilityFunctions.CapitalizeFirstLetter(projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy)?.Username) </p>
                             </div>
                         </td>
                        
@@ -236,7 +236,8 @@
 
             projectInfo = await _getProjectsService.GetProjectById(parsedId);
             userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == userId);
-            myTaskItems = await _getTaskService.GetUsersTasksByProjectId(parsedId, new ObjectId(userId));
+            var tasks = await _getTaskService.GetUsersTasksByProjectId(parsedId, new ObjectId(userId));
+            myTaskItems = tasks.OrderByDescending(t => t.DueDate).ToList();
 
         }
     }

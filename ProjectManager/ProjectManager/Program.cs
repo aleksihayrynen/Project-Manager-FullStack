@@ -12,6 +12,7 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<GetProjectsService>();
 builder.Services.AddScoped<GetTaskService>();
+builder.Services.AddScoped<IProfilePictureService, ProfilePictureService>();
 
 builder.Services.AddServerSideBlazor();
 

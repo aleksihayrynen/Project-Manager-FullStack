@@ -13,8 +13,11 @@
 			<div class="profile_info">
 				<div class="profile_info_left">
 					<div class="profile_left_picture">
-						<div class="profilepicture_container_profile">
-							<img class="profile_picture" src="/Media/flover.png" />
+						<form id="uploadForm" enctype="multipart/form-data" style="display: none;">
+							<input type="file" id="fileInput" name="profilePicture" accept=".jpg,.jpeg,.png,.gif" />
+						</form>
+						<div class="profilepicture_container_profile" id="uploadTrigger">
+							<img id="profileImage" class="profile_picture" src="/Images/GetProfilePicture?userId=@Model.User._id" />
 							<div class="profile_picture_overlay">Upload picture</div>
 						</div>
 					</div>
@@ -223,6 +226,48 @@
 				saveBtn.style.display = 'none';
 				cancelBtn.style.display = 'none';
 			}
+
+
+			const userId = "@Model.User._id.ToString()";
+
+			const fileInput = document.getElementById("fileInput");
+				const uploadTrigger = document.getElementById("uploadTrigger");
+				const profileImage = document.getElementById("profileImage");
+
+				uploadTrigger.addEventListener("click", () => {
+					fileInput.click();
+				});
+
+				fileInput.addEventListener("change", () => {
+					const file = fileInput.files[0];
+					if (!file) return;
+
+					const formData = new FormData();
+					formData.append("profilePicture", file);
+
+				fetch(`/ProfilePicture/Upload?userId=${userId}`, {
+						method: "POST",
+						body: formData
+					})
+					.then(res => {
+						if (!res.ok) throw new Error("Upload failed");
+						return res.json();
+					})
+					.then(data => {
+						console.log("Upload success", data);
+						// Refresh image: force reload with a cache-busting query string
+					profileImage.src = `/Images/GetProfilePicture?userId=${userId}&t=${new Date().getTime()}`;
+					})
+					.catch(err => {
+						console.error("Upload error", err);
+						alert("Upload failed.");
+					});
+				});
+
+
+			
+
+
 	</script>
 
 }

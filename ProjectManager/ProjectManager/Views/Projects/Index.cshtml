@@ -6,10 +6,15 @@
 
 <div class="button_parent" style="position:relative;">
     <div class="AddItem_div">
-        <div class="project_search_group">
-            <input class="project_searchbar" />
-            <svg class="search_icon" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#000000"><path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z" /></svg>
-        </div>
+        <form asp-action="Index" asp-controller="Projects" method="get">
+            <div class="project_search_group">
+                <input class="form-control project_searchbar" placeholder="Search..." name="searchTerm" value="@ViewData["SearchTerm"]" />
+                <button class="search_btn" type="submit" formmethod="get">
+                    <svg class="search_icon" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#EA6077"><path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z" /></svg>
+                </button>
+            </div>
+        </form>
+
 
         <button type="button" class="btn btn-success" id="showModalButton">
             New Project
@@ -17,9 +22,33 @@
     </div>
 </div>
 
+<div class="project_filters-index">
+    <h4>Filters:</h4>
+    <div class="search_filter">
+        <button type="button" class="filter_btn" id="filter_own_button">
+            Own
+        </button>
+        @if (!string.IsNullOrEmpty(ViewData["SearchTerm"]?.ToString()))
+        {
+            <button type="button" class="filter_btn active" id="search_filter">
+                @ViewData["SearchTerm"]
+            </button>
+        }
+
+    </div>
+
+</div>
+
 <div id="modalContainer"></div>
 
 <div class="project_container">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="no_project_found">
+            <h2>404 Project</h2>
+            <img src="/Media/sad_melon.png"/>
+        </div>
+    }
     @foreach (var project in Model)
     {
         <a class="project_link" asp-action="Details" asp-controller="Projects" asp-route-project_id="@project.Project._id" asp-route-project_title="@project.Project.Title">
@@ -34,10 +63,11 @@
                                 @for (var i = 0; i < Math.Min(project.Project.Members.Count, 3); i++)
                                 {
                                     <div class="profilepicture_container">
-                                        <img class="profile_picture" src="/Media/flover.png" />
+                                <img class="profile_picture" src="/Images/GetProfilePicture?userId=@project.Project.Members[i].UserId" alt="Member profile logo"  />
                                     </div>
                                 }
-                                @if (project.Project.Members.Count - 3 > 0)
+
+                                @if( project.Project.Members.Count - 3 > 0)
                                 {
                                     <p id="member_extra">+ @(project.Project.Members.Count - 3)</p>
                                 }
@@ -55,14 +85,14 @@
                                 </div>
                                 
                                 <div class="profilepicture_container">
-                                    <img class="profile_picture" src="/Media/flover.png" />
+                                    <img class="profile_picture" src="/Images/GetProfilePicture?userId=@project.CurrentUser" alt="Member profile logo" />
                                 </div>
                             }
                             else
                             {
                                 <p>Owner:</p>
                                 <div class="profilepicture_container">
-                                    <img class="profile_picture" src="/Media/flover.png" />
+                            <img class="profile_picture" src="/Images/GetProfilePicture?userId=@project.CurrentUser" alt="Project owner logo" />
                                 </div>
                             }
                             <div class="Review">
@@ -92,25 +122,22 @@
 
 
 @section Scripts {
-   
+
     <script>
-            $(document).ready(function () {
+        $(document).ready(function () {
+
+            // Your existing toggle-btn click handler
             $(document).on('click', '.toggle-btn', function () {
                 var value = $(this).data('value');
                 var target = $(this).data('target');
                 console.log(this.data);
 
-                // Set the hidden input value
                 $('#' + target).val(value);
-
-                // Remove active class from both buttons in the same group
                 $(this).siblings('.toggle-btn').removeClass('active');
-                // Add active class to clicked button
                 $(this).addClass('active');
             });
-        });
 
-        $(document).ready(function () {
+            // Load modal function and event binding
             function loadModal() {
                 $.get('@Url.Action("addProjectModal", "Projects")', function (response) {
                     $('#modalContainer').html(response);
@@ -118,11 +145,9 @@
                 });
             }
 
-            // Load modal on button click
             $('#showModalButton').click(loadModal);
 
-
-            // Delegate the form submission to dynamically loaded content
+            // Form submission via AJAX for modal
             $('#modalContainer').on('submit', '#addProjectform', function (e) {
                 e.preventDefault();
                 var form = $(this);
@@ -133,22 +158,58 @@
                     type: 'POST',
                     data: form.serialize(),
                     success: function (response) {
-                    if (response.success) {
-                        $('#addProjectModal').modal('hide');
-                        location.reload();
-                    } else {
-                        // Clean up old modal + backdrop
-                        $('.modal-backdrop').remove();
-                        $('#addProjectModal').modal('hide');
-                        $('#addProjectModal').remove();
+                        if (response.success) {
+                            $('#addProjectModal').modal('hide');
+                            location.reload();
+                        } else {
+                            $('.modal-backdrop').remove();
+                            $('#addProjectModal').modal('hide');
+                            $('#addProjectModal').remove();
 
-                        // Inject updated modal with errors
-                        $('#modalContainer').html(response);
-                        $('#addProjectModal').modal('show');
+                            $('#modalContainer').html(response);
+                            $('#addProjectModal').modal('show');
+                        }
                     }
-                }
                 });
             });
+
+
+
+            const searchFilterBtn = document.getElementById("search_filter");
+
+            if (searchFilterBtn) {
+                searchFilterBtn.addEventListener("click", function () {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete("searchTerm"); // Remove the searchTerm query
+                    window.location.href = url.toString(); // Redirect to updated URL
+                });
+            }
+            // Your filter_own_button toggle & URL update logic here
+            const btn = document.getElementById("filter_own_button");
+            if (btn) {
+                // Initialize active state based on URL param
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('ownOnly') === 'true') {
+                    btn.classList.add('active');
+                }
+
+                btn.addEventListener("click", function () {
+                    const isActive = btn.classList.toggle("active");
+
+                    if (isActive) {
+                        params.set('ownOnly', 'true');
+                    } else {
+                        params.delete('ownOnly');
+                    }
+
+                     // Clear 'searchTerm' param from URL because we cleared the input
+                    params.delete('searchTerm');
+
+                    const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                    window.location.href = newUrl;
+                });
+            }
+
         });
     </script>
 

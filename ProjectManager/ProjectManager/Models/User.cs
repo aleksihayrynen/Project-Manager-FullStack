@@ -29,6 +29,8 @@ namespace ProjectManager.Models
         [BsonElement("salt")]
         public byte[] Salt { get; set; }
 
+        public string ProfilePictureURL { get; set; } = "default.png";
+
 
 
         public string? Occupation { get; set; } = "Not set";

@@ -21,7 +21,7 @@
             {
                 <li class="list-group-item found-people" @onclick="() => AddUser(user)">
                     <div class="profilepicture_container_search">
-                        <img class="profile_picture" src="/Media/flover.png" />
+                <img class="profile_picture" src="/Images/GetProfilePicture?userId=@user.UserId" alt="Profile Picture" />
                     </div>
                     <p>
                         @UtilityFunctions.CapitalizeFirstLetter(user.Username) (@UtilityFunctions.CapitalizeFirstLetter(user.FirstName) @UtilityFunctions.CapitalizeFirstLetter(user.LastName))

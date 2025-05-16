@@ -49,7 +49,7 @@
                             {
 
                                 @UtilityFunctions.CapitalizeFirstLetter(item.Task.Title)
-                                
+
                             }
                         </td>
 
@@ -192,10 +192,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchUserId();
-        if (!string.IsNullOrEmpty(userId))
+    await FetchUserId();
+    if (!string.IsNullOrEmpty(userId))
         {
-            AllTaskItems = await _getTaskService.GetAllTasksForUser(new ObjectId(userId));
+        AllTaskItems = (await _getTaskService.GetAllTasksForUser(new ObjectId(userId))).OrderByDescending(item => item.Task.DueDate).ToList();
         }
     }
 

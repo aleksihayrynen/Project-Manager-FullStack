@@ -7,7 +7,80 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
-<h3>TaskList</h3>
+
+
+<div class="project_info_boxes">
+    <div class="info_box  @(task_state_filter == 1 ? "active" : "inactive")" @onclick="() => FilterByState(1)">
+        <div class="infbox_pic">
+            <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#ff4545">
+                <path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+            </svg>
+        </div>
+        <div class="infobox_text">
+            <p>Tasks Late: @LateCount</p>
+        </div>
+    </div>
+    <div class="info_box  @(task_state_filter == 2 ? "active" : "inactive")" @onclick="() => FilterByState(2)">
+        <div class="infbox_pic">
+            <svg 
+            xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#FFFF55">
+                <path d="m40-120 440-760 440 760H40Zm104-60h672L480-760 144-180Zm340.18-57q12.82 0 21.32-8.68 8.5-8.67 8.5-21.5 0-12.82-8.68-21.32-8.67-8.5-21.5-8.5-12.82 0-21.32 8.68-8.5 8.67-8.5 21.5 0 12.82 8.68 21.32 8.67 8.5 21.5 8.5ZM454-348h60v-224h-60v224Zm26-122Z" />
+            </svg>
+        </div>
+        <div class="infobox_text">
+            <p>Task Assigned: @AssignedCount</p>
+        </div>
+    </div>
+    <div class="info_box @(task_state_filter == 3 ? "active" : "inactive")" @onclick="() => FilterByState(3)">
+        <div class="infbox_pic">
+            <svg
+            xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#146c43">
+                <path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+            </svg>
+        </div>
+        <div class="infobox_text">
+            <p>Task Completed: @DoneCount</p>
+        </div>
+    </div>
+
+
+</div>
+<div class="search_filter_details">
+    <div class="project_search_group">
+        <input class="form-control project_searchbar" placeholder="Search..."
+        type="text"
+        @bind-value="searchText"
+        @oninput="OnSearchInput" />
+        <button class="search_btn">
+            <svg class="search_icon" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#EA6077"><path d="M765-144 526-383q-30 22-65.79 34.5-35.79 12.5-76.18 12.5Q284-336 214-406t-70-170q0-100 70-170t170-70q100 0 170 70t70 170.03q0 40.39-12.5 76.18Q599-464 577-434l239 239-51 51ZM384-408q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Z" /></svg>
+        </button>
+
+    </div>
+    @if (task_state_filter != 0 || !string.IsNullOrEmpty(searchText))
+        {
+            <button type="button" class="filter_btn active" id="search_filter" @onclick="() => ResetFilters()">
+                Clear filters
+            </button>
+        }
+ 
+</div>
+
+
+<h3 class="mt-3">TaskList - 
+    @if (task_state_filter == 1)
+    {
+        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#ff4545"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+    }
+    else if (task_state_filter == 2)
+    {
+        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#FFFF55"><path d="m40-120 440-760 440 760H40Zm104-60h672L480-760 144-180Zm340.18-57q12.82 0 21.32-8.68 8.5-8.67 8.5-21.5 0-12.82-8.68-21.32-8.67-8.5-21.5-8.5-12.82 0-21.32 8.68-8.5 8.67-8.5 21.5 0 12.82 8.68 21.32 8.67 8.5 21.5 8.5ZM454-348h60v-224h-60v224Zm26-122Z" /></svg>
+    }
+    else if(task_state_filter == 3)
+    {
+        <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="30px" fill="#146c43"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+    }
+
+</h3>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger fade-message">
@@ -45,9 +118,9 @@
             </tr>
         </thead>
         <tbody>
-            @if (taskitems != null)
+            @if (filteredTasks != null)
             {
-                @foreach (var item in taskitems)
+                @foreach (var item in filteredTasks)
                 {
                     <tr>
                         <td>
@@ -64,9 +137,9 @@
                             {
                                 <div class="Assigned_flex">
                                     <div class="profilepicture_container_tasklist">
-                                        <img class="profile_picture" src="/Media/flover.png" />
+                                        <img class="profile_picture" src="/Images/GetProfilePicture?userId=@item.AssignedTo" alt="Assigned to profile picture" />
                                     </div>
-                                    <p>@projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo).Username </p>
+                                    <p>@UtilityFunctions.CapitalizeFirstLetter(projectInfo.Members.FirstOrDefault( e => e.UserId == item.AssignedTo).Username) </p>
                                 </div>
 
                             }
@@ -81,7 +154,7 @@
                             }
                             else
                             {
-                                @item.Title
+                                @UtilityFunctions.CapitalizeFirstLetter(item.Title)
                             }
                         </td>
 
@@ -89,9 +162,9 @@
                         <td>
                             <div class="Assigned_flex">
                                 <div class="profilepicture_container_tasklist">
-                                    <img class="profile_picture" src="/Media/flover.png" />
+                            <img class="profile_picture" src="/Images/GetProfilePicture?userId=@item.CreatedBy" alt="Created by profile picture" />
                                 </div>
-                                <p>@projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy).Username </p>
+                                <p>@UtilityFunctions.CapitalizeFirstLetter(projectInfo.Members.FirstOrDefault(e => e.UserId == item.CreatedBy).Username) </p>
                             </div>
                         </td>
 
@@ -219,7 +292,21 @@
 
 
 @code {
-    private List<TaskItem>? taskitems;
+    private List<TaskItem>? allTaskItems = new ();
+    private List<TaskItem> filteredTasks = new();
+    private int task_state_filter;
+
+
+
+    private string searchText = string.Empty;
+    private System.Threading.Timer? debounceTimer;
+
+
+
+    private int LateCount => GetLateCount();
+    private int AssignedCount => GetAssignedCount();
+    private int DoneCount => GetDoneCount();
+
     private Project projectInfo;
     private string? userId;
     private ProjectMembers userInfo;
@@ -235,6 +322,7 @@
         bool IsEditing(string taskId) => editTaskId == taskId;
     }
 
+
     [Parameter]
     public string ProjectId { get; set; }
 
@@ -246,7 +334,10 @@
 
         projectInfo = await _getProjectsService.GetProjectById(parsedId);
         userInfo = projectInfo.Members.FirstOrDefault(e => e.UserId.ToString() == userId);
-        taskitems = await _getTaskService.GetTasksByProjectId(parsedId);
+        allTaskItems = await _getTaskService.GetTasksByProjectId(parsedId);
+        filteredTasks = allTaskItems.OrderBy(t => Math.Abs((t.DueDate.ToLocalTime().Date - DateTime.Today).TotalDays))
+        .ToList();
+
     }
     }
 
@@ -260,6 +351,107 @@
     {
         userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     }
+    }
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+    searchText = e.Value?.ToString() ?? string.Empty;
+
+    debounceTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+    debounceTimer?.Dispose();
+
+    debounceTimer = new System.Threading.Timer(_ =>
+    {
+        debounceTimer?.Dispose();
+        debounceTimer = null;
+
+        // Run filtering AFTER debounce delay on the main UI thread
+        InvokeAsync(() =>
+        {
+            filteredTasks = GetFilteredTasks();
+            StateHasChanged(); // Now UI updates with the filtered list
+        });
+
+    }, null, 300, Timeout.Infinite);
+    }
+
+    private async Task ResetFilters()
+    {
+        task_state_filter = 0;
+        searchText = string.Empty;
+        filteredTasks = GetFilteredTasks();
+    }
+
+    private List<TaskItem> GetFilteredTasks()
+    {
+    return allTaskItems
+        .Where(t =>
+            string.IsNullOrWhiteSpace(searchText) ||
+            t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            (t.Description?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            // AssignedBy username lookup
+            (projectInfo?.Members.FirstOrDefault(m => m.UserId == t.CreatedBy)?.Username.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            // AssignedTo username lookup
+            (projectInfo?.Members.FirstOrDefault(m => m.UserId == t.AssignedTo)?.Username.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)).
+            OrderBy(t => Math.Abs((t.DueDate.ToLocalTime().Date - DateTime.Today).TotalDays))
+            .ToList();
+    }
+
+        private void FilterByState(int clickedState)
+        {
+            if (allTaskItems == null)
+                return;
+
+            // If clicked again, reset to show all
+            if (task_state_filter == clickedState)
+            {
+                task_state_filter = 0;
+                filteredTasks = allTaskItems.ToList();
+                return;
+            }
+
+            task_state_filter = clickedState;
+
+            if (clickedState == 1)
+            {
+                // Late = InProgress AND DueDate < Today
+                filteredTasks = allTaskItems
+                    .Where(task => task.State == TaskItem.TaskState.InProgress &&
+                                   task.DueDate.ToLocalTime().Date < DateTime.Today)
+                    .ToList();
+            }
+            else if (clickedState == 2)
+            {
+                // Assigned = InProgress (but not late)
+                filteredTasks = allTaskItems
+                    .Where(task => task.State == TaskItem.TaskState.InProgress)
+                    .ToList();
+            }
+            else if (clickedState == 3)
+            {
+                // Done
+                filteredTasks = allTaskItems
+                    .Where(task => task.Completed == true)
+                    .ToList();
+            }
+        }
+
+
+
+
+    private int GetLateCount()
+    {
+        return allTaskItems.Count(t => t.DueDate.ToLocalTime() < DateTime.Today && t.State == TaskItem.TaskState.InProgress);
+    }
+
+    private int GetAssignedCount()
+    {
+        return allTaskItems.Count(t => t.State == TaskItem.TaskState.InProgress);
+    }
+
+    private int GetDoneCount()
+    {
+        return allTaskItems.Count(t => t.State == TaskItem.TaskState.Completed);
     }
 
 
@@ -289,22 +481,23 @@
         editTaskId = null;
         editedBackUp = null;
     }
-    else if (userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
-    {
-        await _getTaskService.UpdateTask(task);
-        editTaskId = null;
-        editedBackUp = null;
-    }
-    else
-    {
-        errorMessage = "You do not have rights to mark this Task";
-    }
+        else if (userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
+        {
+            await _getTaskService.UpdateTask(task);
+            editTaskId = null;
+            editedBackUp = null;
+        }
+        else
+        {
+            errorMessage = "You do not have rights to mark this Task";
+        }
     }
 
     public async Task MarkTaskAsDone(TaskItem task)
     {
     if (userInfo.Role == "Owner")
     {
+        task.State = TaskItem.TaskState.Completed;
         await SaveTask(task); // Owner can always mark it as done
     }
     else if (projectInfo.UseReview && userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
@@ -314,7 +507,7 @@
     }
     else if (!projectInfo.UseReview && userInfo.Role == "Member" && userId == task.AssignedTo.ToString())
     {
-
+        task.State = TaskItem.TaskState.Completed;
         await SaveTask(task); // Save whether in review or completed
     }
     else
@@ -377,7 +570,7 @@
     // Revert the task to the backup values when editing is cancelled
     if (editedBackUp != null)
     {
-        var taskToRevert = taskitems?.FirstOrDefault(task => task._id.ToString() == editTaskId);
+        var taskToRevert = allTaskItems?.FirstOrDefault(task => task._id.ToString() == editTaskId);
         if (taskToRevert != null)
         {
             // Restore the original task item data from editedBackUp
@@ -408,7 +601,7 @@
         if (taskToDelete != null)
         {
             await _getTaskService.DeleteTask(taskToDelete);
-            taskitems?.Remove(taskToDelete);
+            allTaskItems?.Remove(taskToDelete);
             taskToDelete = null;
         }
 
@@ -418,7 +611,7 @@
         if (taskToDelete != null)
         {
             await _getTaskService.DeleteTask(taskToDelete);
-            taskitems?.Remove(taskToDelete);
+            allTaskItems?.Remove(taskToDelete);
             taskToDelete = null;
         }
     }
@@ -427,7 +620,7 @@
         if (taskToDelete != null)
         {
             await _getTaskService.DeleteTask(taskToDelete);
-            taskitems?.Remove(taskToDelete);
+            allTaskItems?.Remove(taskToDelete);
             taskToDelete = null;
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace ProjectManager.Models.ViewModels
+﻿using MongoDB.Bson;
+
+namespace ProjectManager.Models.ViewModels
 {
     public class ProjectWithTaskViewModel
     {
@@ -8,6 +10,7 @@
         public int AssignedTask { get; set; }
         public int LateTask { get; set; }
         public bool IsOwner { get; set; }
+        public ObjectId CurrentUser { get; set; }
 
         public DateTime? NextTaskDueDate { get; set; }
 

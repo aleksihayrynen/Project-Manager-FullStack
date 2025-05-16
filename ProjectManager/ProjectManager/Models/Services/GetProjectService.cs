@@ -86,9 +86,20 @@ namespace ProjectManager.Models.Services
             return await MongoManipulator.GetAllObjectsByFilter(filter);
         }
 
-        public async Task<List<ProjectWithTaskViewModel>> GetProjectsWithTaskInfo(ObjectId userId)
+        public async Task<List<ProjectWithTaskViewModel>> GetProjectsWithTaskInfo(ObjectId userId, string searchTerm)
         {
             var projects = await GetProjectsByUserId(userId);
+
+            // Filter projects by search term if it's provided
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                // Case-insensitive search in project titles
+                projects = projects
+                    .Where(p => p.Title != null &&
+                                p.Title.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+            }
+
             var projectIds = projects.Select(p => p._id).ToList();
 
             var allTasks = await GetTasksByProjectIds(projectIds);
@@ -103,16 +114,17 @@ namespace ProjectManager.Models.Services
                     TaskCount = tasks.Count,
                     TaskInReview = tasks.Count(t => t.State == TaskState.InReview),
                     AssignedTask = tasks.Count(t => t.State == TaskState.InProgress),
-                    LateTask =  tasks.Count(t => t.State == TaskState.InProgress && t.DueDate.ToLocalTime() < DateTime.Today),
+                    LateTask = tasks.Count(t => t.State == TaskState.InProgress && t.DueDate.ToLocalTime() < DateTime.Today),
                     IsOwner = project.Members.Any(m => m.UserId == userId && m.Role == "Owner"),
+                    CurrentUser = userId,
                     NextTaskDueDate = tasks
-                    .Where(t => t.State != TaskState.Completed)
-                    .OrderBy(t => t.DueDate)
-                    .Select(t => (DateTime?)t.DueDate)
-                    .FirstOrDefault()
-                    
+                        .Where(t => t.State != TaskState.Completed)
+                        .OrderBy(t => t.DueDate)
+                        .Select(t => (DateTime?)t.DueDate)
+                        .FirstOrDefault()
                 };
-            }).ToList();
+            }).OrderByDescending(p => p.Project.CreatedAt)
+            .ToList();
         }
 
 

@@ -196,11 +196,12 @@ namespace ProjectManager.Controllers
             }
         }
 
-        [Authorize]
-        public async  Task<IActionResult> Index()
+        [Authorize] // Function is get so no need for AntiForgery CSRF token
+        public async  Task<IActionResult> Index(string? searchTerm, bool? ownOnly = false)
         {
             
             ViewData["Title"] = "Projects";
+            ViewData["SearchTerm"] = searchTerm ?? "";
             try
             {
                 if (HttpContext.User.Claims != null)
@@ -211,7 +212,13 @@ namespace ProjectManager.Controllers
                     if (string.IsNullOrEmpty(userId))
                         throw new InvalidOperationException("User is null. Unable to proceed.");
 
-                    var result = await _getProjectsService.GetProjectsWithTaskInfo(new ObjectId(userId));
+                    var result = await _getProjectsService.GetProjectsWithTaskInfo(new ObjectId(userId), searchTerm);
+
+                    if (ownOnly == true)
+                    {
+                        result = result.Where(p => p.IsOwner).ToList();
+                    }
+
                     return View(result);
                 }
                 else
