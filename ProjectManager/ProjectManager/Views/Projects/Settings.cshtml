@@ -3,6 +3,10 @@
 @model Project
 
 
+@{
+        ViewData["Title"] = "Settings";
+}
+
 <div class="detail_tabs">
     <a asp-action="Details" asp-controller="Projects" asp-route-project_id="@Model._id" asp-route-project_title="@Model.Title">
 

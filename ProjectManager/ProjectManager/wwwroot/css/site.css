@@ -178,6 +178,39 @@ nav {
     width: 100%;
 }
 
+.account_info {
+    transform: translateX(100%);
+    opacity: 0;
+    overflow: hidden;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    pointer-events: none;  /*stops the links from working*/
+    align-items: center;
+    gap: 10px;
+}
+
+.account_info.show {
+    transform: translateX(0);
+    opacity: 1;
+    display: flex;
+    pointer-events: auto;
+}
+
+.Logout_show {
+    display: flex;
+    align-items: center;
+
+}
+
+.account_info a {
+    color: var(--colourpalette-white);
+    text-decoration: none;
+}
+
+
+.Logout_show:hover {
+    color: #BB271A;
+}
+
 
 
 .profilepicture_container {
@@ -1169,7 +1202,7 @@ flex-wrap:wrap;
     background: none;
     border: none;
     margin-bottom: 15px;
-    margin-left:200px;
+    margin-left:50%;
 }
 #edit_svg:hover {
     fill: #EA6077;
@@ -1347,6 +1380,8 @@ flex-wrap:wrap;
 
 
 
+
+
 @media screen and (max-width: 1050px) {
     .profile_row1, .profile_row2 {
         display: flex;
@@ -1402,4 +1437,132 @@ flex-wrap:wrap;
         .profile_row1, .profile_row2 {
             justify-content:center;
         }
+
+
+
     }
+
+
+@media screen and (max-width: 600px) {
+    
+
+    
+    .container_own{
+        padding-left: 0;
+    }
+
+    #nav_home_a{
+        display:none;
+    }
+    .menu_icon{
+        margin-right:10px
+    }
+
+    .profile_container {
+        width: 100%;
+    }
+
+
+    .profile_info_container{
+        min-width:0;
+        width:100%;
+
+    }
+    .profile_info_container  h4{
+        font-size:1em;
+    }
+
+    .about_me_container {
+        width: 100%;
+        min-width: 0;
+    }
+
+
+    .About_me {
+        min-width: 0;
+        width: 100%;
+        padding:15px;
+    }
+
+    .reset_pass_container {
+        min-width:0;
+        width:100%;
+
+    }
+    .reset_pass {
+        min-width: 0;
+    }
+    .extra_container {
+        min-width: 0;
+        width: 100%;
+    }
+    .profile_extra {
+        min-width: 0;
+    }
+
+    .project_container{
+        width:100%;
+    }
+    .project_div {
+        width:100%
+    }
+
+    .project_link{
+        width:100%;
+    }
+
+    .AddItem_div {
+        flex-wrap: wrap;
+        flex-direction: column-reverse;
+        gap:15px;
+        align-items:flex-start;
+        
+    }
+    .Members_list{
+        width:100%
+    }
+
+    .footer_1, .footer_2, .footer_3{
+        width:100%;
+    }
+    .footer_container > div {
+        flex-direction: column;
+    }
+
+    .account_info {
+        position: absolute;
+        transform: translateY(0px);
+        opacity: 1; /* reversed so doesnt show automatic on smaller screens*/
+        overflow: hidden;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        pointer-events: none; /*stops the links from working*/
+        pointer-events: auto;
+        bottom: -85px; /* Match these with .show */
+        right: 0;
+        gap: 15px;
+        display: flex;
+        background-color: #1e1e1e;
+        padding: 10px 30px;
+        flex-direction: column-reverse;
+        z-index: 2;
+    }
+
+    .account_info.show {
+        position: absolute;
+        transform: translateY(-20);
+        opacity: 0; /* reversed so doesnt show automatic on smaller screens*/
+        display: flex;
+        align-items: flex-start;
+        pointer-events: none;
+        bottom: -85px;
+        right: 0;
+        padding: 10px 30px;
+        background-color: #1e1e1e;
+        flex-direction: column-reverse;
+        z-index: 2;
+    }
+    
+    
+
+}
+

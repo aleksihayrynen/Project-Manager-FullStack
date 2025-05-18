@@ -17,6 +17,12 @@ function toggleMenu() {
 
 const sideNav = document.querySelector('.side_nav');
 
+function togglePictureMenu() {
+    const info = document.getElementById('account_info');
+    info.classList.toggle('show');
+}
+
+
 function adjustSidebarHeight() {
     const footer = document.querySelector('footer');
     const footerRect = footer.getBoundingClientRect();

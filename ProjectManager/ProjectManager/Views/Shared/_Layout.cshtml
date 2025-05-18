@@ -5,6 +5,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planmelon</title>
+    <link rel="icon"  href="~/Media/flover.png">
+
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ProjectManager.styles.css" asp-append-version="true" />
@@ -23,22 +27,33 @@
                 {
                     <img class="menu_icon" onclick="toggleMenu()" src="/Media/menu_icon.svg" alt="Menu icon">
                 }
-                <a asp-area="" asp-controller="Home" asp-action="Index">
+                <a asp-area="" asp-controller="Home" asp-action="Index" id="nav_home_a">
                     <img class="logo_icon" src="/Media/flover.png" alt="Logo">
                 </a>
                 <h4 class="Page_title">@ViewData["Title"]</h4>
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
-        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    <div class="account_buttons">
-                        <a asp-area="" asp-controller="Account" asp-action="logout">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BB271A"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" /></svg>
+                     var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                <div class="account_buttons">
+                    <!-- This is the toggleable content -->
+                    <div id="account_info" class="account_info hidden show">
+                            <a class="Logout_show" asp-area="" asp-controller="Account" asp-action="logout">
+                                <p>Logout</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#BB271A">
+                                    <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" />
+                                </svg>
+                            </a>
+                        <a  asp-area="" asp-controller="Profile" asp-action="Index">
+                            <h6 class="mb-0">@UtilityFunctions.CapitalizeFirstLetter(User.Identity.Name)</h6>
                         </a>
-                        <h5 class="mb-0"> @UtilityFunctions.CapitalizeFirstLetter(User.Identity.Name)</h5>
-                        <div class="profilepicture_container">
-                        <img class="profile_picture"  onclick="toggleMenu()" src="/Images/GetProfilePicture?userId=@userId" alt="Menu icon">
-                        </div>
+                        
                     </div>
+
+                    <!-- Profile picture that triggers the toggle -->
+                    <div class="profilepicture_container">
+                        <img class="profile_picture" onclick="togglePictureMenu()" src="/Images/GetProfilePicture?userId=@userId" alt="Menu icon">
+                    </div>
+                </div>
                 }
                 else
                 {
